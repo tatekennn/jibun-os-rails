@@ -1,5 +1,6 @@
 class PwaController < ApplicationController
   skip_before_action :require_login
+  skip_forgery_protection only: :service_worker
 
   def service_worker
     response.headers["Service-Worker-Allowed"] = "/"
