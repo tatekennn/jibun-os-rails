@@ -8,6 +8,7 @@ export default class extends Controller {
     const savedMode = localStorage.getItem("jibun_os_mode") || this.defaultModeValue
     this.applyMode(savedMode, false)
     this.refreshNotificationButton()
+    this.restorePushSubscriptionIfNeeded()
 
     if (this.hasInputTarget) {
       this.submitShortcutHandler = (event) => {
@@ -58,15 +59,18 @@ export default class extends Controller {
       return
     }
 
-    localStorage.setItem("jibun_os_ai_notify", "enabled")
-
     if (this.pushNotificationsSupported()) {
       const subscribed = await this.enablePushNotifications()
-      this.statusTextTarget.textContent = subscribed
-        ? "ロック中でもAI返信通知が届くようにしました。"
-        : "ブラウザ通知はONです。ロック中通知の登録だけ失敗しました。"
+      if (subscribed) {
+        localStorage.setItem("jibun_os_ai_notify", "push")
+        this.statusTextTarget.textContent = "ロック中でもAI返信通知が届くようにしました。"
+      } else {
+        localStorage.removeItem("jibun_os_ai_notify")
+        this.statusTextTarget.textContent = "通知許可はありますが、ロック中通知の登録に失敗しました。もう一度ONにしてください。"
+      }
     } else {
-      this.statusTextTarget.textContent = "返信完了時にブラウザ通知します。ロック中通知はサーバー設定後に使えます。"
+      localStorage.setItem("jibun_os_ai_notify", "local")
+      this.statusTextTarget.textContent = "この画面を開いている間、返信完了時に通知します。ロック中通知はPWA/サーバーPush対応時に使えます。"
     }
 
     this.refreshNotificationButton()
@@ -233,7 +237,27 @@ export default class extends Controller {
   }
 
   notificationsEnabled() {
-    return this.notificationsSupported() && Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "enabled"
+    return this.notificationsSupported() && Notification.permission === "granted" && ["push", "local", "enabled"].includes(localStorage.getItem("jibun_os_ai_notify"))
+  }
+
+  pushNotificationsEnabled() {
+    return this.notificationsSupported() && Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "push"
+  }
+
+  async restorePushSubscriptionIfNeeded() {
+    if (!this.pushNotificationsSupported() || Notification.permission !== "granted") return
+
+    const savedState = localStorage.getItem("jibun_os_ai_notify")
+    if (!["push", "enabled"].includes(savedState)) return
+
+    const subscribed = await this.enablePushNotifications()
+    if (subscribed) {
+      localStorage.setItem("jibun_os_ai_notify", "push")
+    } else {
+      localStorage.removeItem("jibun_os_ai_notify")
+    }
+
+    this.refreshNotificationButton()
   }
 
   refreshNotificationButton() {
@@ -241,8 +265,11 @@ export default class extends Controller {
 
     this.notificationButtonTarget.hidden = false
 
-    if (Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "enabled") {
-      this.notificationButtonTarget.textContent = this.pushNotificationsSupported() ? "ロック中通知ON" : "完了通知ON"
+    if (this.pushNotificationsEnabled()) {
+      this.notificationButtonTarget.textContent = "ロック中通知ON"
+      this.notificationButtonTarget.disabled = true
+    } else if (Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "local") {
+      this.notificationButtonTarget.textContent = "完了通知ON"
       this.notificationButtonTarget.disabled = true
     } else if (Notification.permission === "denied") {
       this.notificationButtonTarget.textContent = "通知ブロック中"
@@ -255,7 +282,7 @@ export default class extends Controller {
 
   notifyReplyFinished(payload = {}) {
     if (navigator.vibrate) navigator.vibrate([80, 40, 80])
-    if (!this.notificationsEnabled()) return
+    if (!this.notificationsEnabled() || this.pushNotificationsEnabled()) return
 
     const reply = payload.assistant_reply || payload.message || "返信が届きました。"
     const body = reply.length > 120 ? `${reply.slice(0, 117)}...` : reply
