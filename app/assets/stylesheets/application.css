@@ -7108,7 +7108,7 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* Dashboard mobile safe-area top v3: align home header spacing with other pages */
+/* Dashboard mobile safe-area top v4: use the same header spacing as non-home pages */
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
@@ -7127,7 +7127,7 @@ body.dashboard .home-subscbox__summary {
 
 @media (max-width: 480px) {
   body.dashboard .top-bar {
-    margin: 0 0 12px;
+    margin: 0;
     padding: 10px 0 12px;
   }
 
