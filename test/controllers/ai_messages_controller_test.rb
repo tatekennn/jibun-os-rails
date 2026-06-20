@@ -44,43 +44,74 @@ class AiMessagesControllerTest < ActionDispatch::IntegrationTest
     HermesAppMessageNotifier.define_singleton_method(:call, original_hermes_call) if original_hermes_call
   end
 
-  test "signed in owner completes today's check out request locally" do
+  test "signed in owner forwards today's check out request to discord and hermes" do
     sign_in_as_owner
     today = WorkDay.today
     today.update!(check_out_confirmed: false, check_out_confirmed_at: nil)
+
+    discord_delivered = []
+    hermes_delivered = []
+    original_discord_call = DiscordAppMessageNotifier.method(:call)
+    original_hermes_call = HermesAppMessageNotifier.method(:call)
+    DiscordAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:|
+      discord_delivered << { body: body, mode: mode, request: request }
+    end
+    HermesAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:, context: nil, ai_message: nil|
+      hermes_delivered << { body: body, mode: mode, request: request, context: context, ai_message: ai_message }
+      :delivered
+    end
 
     post ai_messages_url(format: :json), params: { message: { body: "今日の退勤して", mode: "dashboard" } }
 
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal true, payload["ok"]
-    assert_equal "completed", payload["status"]
-    assert_equal true, payload["completed"]
-    assert_match "今日の退勤打刻を確認済みにしました", payload["assistant_reply"]
-    assert WorkDay.today.check_out_confirmed?
-    assert WorkDay.today.check_out_confirmed_at.present?
+    assert_equal "delivered", payload["status"]
+    assert_equal false, payload["completed"]
+    assert_match "実行結果が戻るまで", payload["assistant_reply"]
+    assert_not WorkDay.today.check_out_confirmed?
+    assert_nil WorkDay.today.check_out_confirmed_at
+    assert_equal 1, discord_delivered.size
+    assert_equal "今日の退勤して", discord_delivered.first[:body]
+    assert_equal 1, hermes_delivered.size
+    assert_equal "今日の退勤して", hermes_delivered.first[:body]
+    assert_kind_of AiMessage, hermes_delivered.first[:ai_message]
+  ensure
+    DiscordAppMessageNotifier.define_singleton_method(:call, original_discord_call) if original_discord_call
+    HermesAppMessageNotifier.define_singleton_method(:call, original_hermes_call) if original_hermes_call
   end
 
-  test "signed in owner gets this month spending from local records" do
+  test "signed in owner forwards this month spending question to discord and hermes" do
     sign_in_as_owner
-    PaidRide.delete_all
-    LunchLog.delete_all
-    PaidRide.create!(used_on: Date.current, line_name: "京王ライナー", direction: "帰り", fare: 410, reason: "疲れ", fatigue_level: 4)
-    PaidRide.create!(used_on: Date.current, line_name: "京王ライナー", direction: "帰り", fare: 410, reason: "疲れ", fatigue_level: 3)
-    LunchLog.create!(visited_on: Date.current, shop_name: "渋谷定食", area: "渋谷", price: 980, rating: 4, crowdedness: "普通")
-    PaidRide.create!(used_on: 1.month.ago.to_date, line_name: "京王ライナー", fare: 410, fatigue_level: 3)
-    LunchLog.create!(visited_on: 1.month.ago.to_date, shop_name: "先月ランチ", price: 1200, rating: 3, crowdedness: "普通")
+
+    discord_delivered = []
+    hermes_delivered = []
+    original_discord_call = DiscordAppMessageNotifier.method(:call)
+    original_hermes_call = HermesAppMessageNotifier.method(:call)
+    DiscordAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:|
+      discord_delivered << { body: body, mode: mode, request: request }
+    end
+    HermesAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:, context: nil, ai_message: nil|
+      hermes_delivered << { body: body, mode: mode, request: request, context: context, ai_message: ai_message }
+      :delivered
+    end
 
     post ai_messages_url(format: :json), params: { message: { body: "今月いくら使った？？", mode: "budget" } }
 
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal true, payload["ok"]
-    assert_equal "completed", payload["status"]
-    assert_equal true, payload["completed"]
-    assert_match "合計¥1,800", payload["assistant_reply"]
-    assert_match "有料列車2回で¥820", payload["assistant_reply"]
-    assert_match "ランチ1件で¥980", payload["assistant_reply"]
+    assert_equal "delivered", payload["status"]
+    assert_equal false, payload["completed"]
+    assert_match "実行結果が戻るまで", payload["assistant_reply"]
+    assert_equal 1, discord_delivered.size
+    assert_equal "今月いくら使った？？", discord_delivered.first[:body]
+    assert_equal 1, hermes_delivered.size
+    assert_equal "今月いくら使った？？", hermes_delivered.first[:body]
+    assert_equal "budget", hermes_delivered.first[:mode]
+  ensure
+    DiscordAppMessageNotifier.define_singleton_method(:call, original_discord_call) if original_discord_call
+    HermesAppMessageNotifier.define_singleton_method(:call, original_hermes_call) if original_hermes_call
   end
 
   test "shows stored assistant reply for polling" do

@@ -25,6 +25,8 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     assert_equal ai_message.public_id, payload[:message_id]
     assert_includes payload[:callback_url], ai_message.public_id
     assert_includes payload[:callback_url], ai_message.callback_token
+    assert_includes payload[:action_url], ai_message.public_id
+    assert_includes payload[:action_url], ai_message.callback_token
     assert payload[:sent_at].present?
   end
 

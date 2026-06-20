@@ -37,6 +37,7 @@ class HermesAppMessageNotifier
         ip: request&.remote_ip || "unknown",
         message_id: ai_message&.public_id,
         callback_url: callback_url_for(request: request, ai_message: ai_message),
+        action_url: action_url_for(request: request, ai_message: ai_message),
         sent_at: Time.current.iso8601
       }.compact
     end
@@ -55,6 +56,17 @@ class HermesAppMessageNotifier
       return if request.blank? || ai_message.blank?
 
       Rails.application.routes.url_helpers.hermes_reply_webhook_url(
+        ai_message.public_id,
+        token: ai_message.callback_token,
+        host: request.host,
+        protocol: request.protocol
+      )
+    end
+
+    def action_url_for(request:, ai_message:)
+      return if request.blank? || ai_message.blank?
+
+      Rails.application.routes.url_helpers.hermes_action_webhook_url(
         ai_message.public_id,
         token: ai_message.callback_token,
         host: request.host,

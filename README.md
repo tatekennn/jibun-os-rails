@@ -192,6 +192,7 @@ HERMES_APP_MESSAGE_WEBHOOK_SECRET
 
 `DISCORD_APP_MESSAGE_*` は、アプリ内AIチャットの内容をDiscordスレッドへ通知するための設定です。
 `HERMES_APP_MESSAGE_*` は、同じ投稿をHermes AgentのWebhookへ直接送り、Hermes側で内容を把握・処理できるようにするための設定です。
+通常の相談だけでなく、「今日の退勤して」などの打刻系入力もいったんHermesへ渡します。Hermesが実行すべきと判断した場合は、payloadに含まれる一時トークン付き `action_url` へ `{"action":"confirm_check_in"}` または `{"action":"confirm_check_out"}` をPOSTし、Rails側の安全なメソッドで実データを更新します。
 `HERMES_APP_MESSAGE_WEBHOOK_SECRET` はHermes Webhook側のroute secretと同じ値にします。
 Render上のRailsアプリから届く必要があるため、`HERMES_APP_MESSAGE_WEBHOOK_URL` にはlocalhostではなく、外部から到達できるHermes Webhook URLを設定します。
 
@@ -242,5 +243,5 @@ bin/rails server -b 0.0.0.0 -p $PORT
 - `config/master.key`はGitHubに入れないこと。
 - Render Free Postgresは30日制限があります。
 - Render Free Web Serviceはスリープします。
-- 本物のAI連携はまだありません。
+- AI連携はHermes Webhook経由です。Quick Tunnel URLは一時的なので、安定運用するならNamed Tunnelなど固定URL化してください。
 - VercelにあるNext.js版は過去の表示確認用プロトタイプです。今後の本体はこのRails版です。
