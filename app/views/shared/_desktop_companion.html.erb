@@ -1,0 +1,34 @@
+<aside class="desktop-companion" aria-label="自分OS コンパニオン">
+  <section class="desktop-companion__card desktop-companion__card--ai">
+    <p class="eyebrow">ASSIST</p>
+    <h2>AIチャット</h2>
+    <p>相談、記録の確認、アプリ改善依頼をここから送れます。</p>
+    <%= link_to "AIに相談する", ai_chat_path, class: "desktop-companion__primary" %>
+  </section>
+
+  <section class="desktop-companion__card">
+    <p class="eyebrow">MENU</p>
+    <nav class="desktop-companion__menu" aria-label="PCメニュー">
+      <%= link_to root_path, class: active_nav_class("dashboard"), aria: active_nav_aria("dashboard") do %>
+        <span>ホーム</span><small>今日の全体</small>
+      <% end %>
+      <%= link_to today_work_days_path, class: active_nav_class("work_days"), aria: active_nav_aria("work_days") do %>
+        <span>打刻</span><small>出勤・退勤</small>
+      <% end %>
+      <%= link_to paid_rides_path, class: active_nav_class("paid_rides"), aria: active_nav_aria("paid_rides") do %>
+        <span>列車</span><small>今月の支出</small>
+      <% end %>
+      <%= link_to lunch_logs_path, class: active_nav_class("lunch_logs"), aria: active_nav_aria("lunch_logs") do %>
+        <span>ランチ</span><small>店と価格</small>
+      <% end %>
+      <%= link_to hobby_items_path, class: active_nav_class("hobby_items"), aria: active_nav_aria("hobby_items") do %>
+        <span>趣味</span><small>予定・メモ</small>
+      <% end %>
+    </nav>
+  </section>
+
+  <section class="desktop-companion__card desktop-companion__card--note">
+    <p class="eyebrow">SYSTEM</p>
+    <p>スマホはアプリ感を優先。PCでは左で記録、右で相談と移動を固定します。</p>
+  </section>
+</aside>

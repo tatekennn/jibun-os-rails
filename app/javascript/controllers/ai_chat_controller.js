@@ -7,6 +7,22 @@ export default class extends Controller {
   connect() {
     const savedMode = localStorage.getItem("jibun_os_mode") || this.defaultModeValue
     this.applyMode(savedMode, false)
+
+    if (this.hasInputTarget) {
+      this.submitShortcutHandler = (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+          event.preventDefault()
+          this.inputTarget.form?.requestSubmit()
+        }
+      }
+      this.inputTarget.addEventListener("keydown", this.submitShortcutHandler)
+    }
+  }
+
+  disconnect() {
+    if (this.hasInputTarget && this.submitShortcutHandler) {
+      this.inputTarget.removeEventListener("keydown", this.submitShortcutHandler)
+    }
   }
 
   setMode(event) {
@@ -110,7 +126,11 @@ export default class extends Controller {
 
       if (response.ok && payload.ok) {
         const line = this.appendLine("AI", payload.assistant_reply || payload.message)
-        if (payload.id && !payload.completed) this.pollReply(payload.id, line)
+        if (payload.id && !payload.completed) {
+          line.dataset.status = "waiting"
+          this.statusTextTarget.textContent = "Hermesの実行結果を待っています。この画面は自動更新します。"
+          this.pollReply(payload.id, line)
+        }
       } else {
         this.appendLine("AI", payload.message || "送信に失敗しました。")
       }
@@ -129,7 +149,9 @@ export default class extends Controller {
     const delay = attempt < 10 ? 2000 : 5000
 
     if (attempt >= maxAttempts) {
-      this.replaceLineText(line, "時間がかかっています。この画面を開き直して、必要ならもう一度送ってください。")
+      delete line.dataset.status
+      this.statusTextTarget.textContent = "返信待ちが長引いています。Discord通知とHermes側の実行状況を確認してください。"
+      this.replaceLineText(line, "返信待ちが長引いています。Discordには届いている可能性があります。必要なら少し時間を置いて再送してください。")
       return
     }
 
@@ -141,13 +163,22 @@ export default class extends Controller {
         const payload = await response.json()
 
         if (!response.ok || !payload.ok) {
+          delete line.dataset.status
+          this.statusTextTarget.textContent = "返信確認に失敗しました。"
           this.replaceLineText(line, payload.message || "返信の確認に失敗しました。")
           return
         }
 
         if (payload.completed) {
+          delete line.dataset.status
+          this.statusTextTarget.textContent = "返信を受け取りました。"
           this.replaceLineText(line, payload.assistant_reply || payload.message)
           return
+        }
+
+        if (attempt === 8) {
+          this.replaceLineText(line, "まだ処理中です。実データ操作やデプロイ確認は少し時間がかかることがあります。")
+          line.dataset.status = "waiting"
         }
 
         this.pollReply(messageId, line, attempt + 1)

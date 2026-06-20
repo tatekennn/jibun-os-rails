@@ -6682,3 +6682,274 @@ body.ai_chats .bottom-nav {
     width: 270px;
   }
 }
+
+/* --- JIBUN OS overall polish: calm PWA shell + desktop companion --- */
+:root {
+  --app-bg: #edf4f1;
+  --app-surface: rgba(255, 255, 255, 0.78);
+  --app-surface-strong: rgba(255, 255, 255, 0.94);
+  --app-border: rgba(32, 36, 42, 0.10);
+  --app-shadow: 0 18px 60px rgba(24, 35, 44, 0.12);
+  --app-radius: 24px;
+}
+
+html {
+  background: #dce9e5;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(47, 125, 87, 0.16), transparent 34%),
+    radial-gradient(circle at 88% 2%, rgba(48, 102, 190, 0.12), transparent 28%),
+    linear-gradient(180deg, #f6faf7 0%, var(--app-bg) 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Yu Gothic", "Yu Gothic UI", sans-serif;
+}
+
+.app-frame {
+  width: 100%;
+}
+
+.app-shell {
+  border: 0;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.62), var(--app-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.top-bar {
+  margin: -2px -2px 10px;
+  padding: 12px 4px 14px;
+  border-bottom: 1px solid var(--app-border);
+  background: rgba(246, 250, 247, 0.84);
+}
+
+.brand-lockup strong,
+.home-subscbox__masthead h1,
+.page-head h1 {
+  letter-spacing: -0.04em;
+}
+
+.pixel-logo,
+body.dashboard .pixel-logo {
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff, #dceee8);
+  box-shadow: inset 0 0 0 1px rgba(32, 36, 42, 0.10), 0 8px 18px rgba(47, 125, 87, 0.12);
+}
+
+.top-bar__date,
+.top-bar__logout,
+.flash,
+.page-head,
+.pixel-card,
+.ai-dock,
+.bottom-nav,
+.home-subscbox,
+.home-subscbox__summary,
+.home-subscbox__row,
+.home-subscbox__mini-stats div,
+.home-subscbox__notice,
+.ghost-button,
+.pixel-button,
+.shortcut-grid a,
+.inline-actions a,
+.inline-actions button,
+.tag-row span {
+  border-color: var(--app-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 26px rgba(24, 35, 44, 0.08) !important;
+}
+
+.page-head,
+.pixel-card,
+.ai-dock,
+.home-subscbox,
+.home-subscbox__summary,
+.home-subscbox__row,
+.home-subscbox__mini-stats div,
+.home-subscbox__notice {
+  background: var(--app-surface-strong) !important;
+}
+
+.pixel-button,
+.shortcut-grid a,
+.inline-actions a,
+.inline-actions button,
+.home-subscbox__row-action,
+.ghost-button {
+  min-height: 42px;
+  transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.pixel-button:active,
+.shortcut-grid a:active,
+.inline-actions a:active,
+.inline-actions button:active,
+.home-subscbox__row-action:active,
+.ghost-button:active {
+  transform: scale(0.98);
+}
+
+.inline-actions {
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.inline-actions a,
+.inline-actions button {
+  min-width: 72px;
+  border-width: 1px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.inline-actions .danger-action,
+.danger-action {
+  color: #9f3325;
+  background: rgba(255, 235, 229, 0.92) !important;
+}
+
+.filter-grid label {
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.ai-dock__message {
+  white-space: pre-wrap;
+}
+
+.ai-dock__message[data-status="waiting"]::after,
+.ai-dock__message--thinking::after {
+  content: "…";
+  display: inline-block;
+  width: 1.1em;
+  margin-left: 0.2em;
+  animation: jibunPulse 1.15s ease-in-out infinite;
+  vertical-align: baseline;
+}
+
+@keyframes jibunPulse {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-1px); }
+}
+
+.desktop-companion {
+  display: none;
+}
+
+@media (min-width: 980px) {
+  .app-frame--signed-in {
+    display: grid;
+    grid-template-columns: minmax(460px, 760px) 300px;
+    gap: 22px;
+    align-items: start;
+    width: min(100% - 36px, 1120px);
+    margin: 0 auto;
+  }
+
+  .app-frame--signed-in .app-shell {
+    width: 100%;
+    margin: 0;
+    padding: 18px 18px 44px;
+    border-radius: 0 0 28px 28px;
+  }
+
+  .desktop-companion {
+    position: sticky;
+    top: 18px;
+    display: grid;
+    gap: 14px;
+    padding-top: 18px;
+  }
+
+  .desktop-companion__card {
+    padding: 16px;
+    border: 1px solid var(--app-border);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: var(--app-shadow);
+    backdrop-filter: blur(18px);
+  }
+
+  .desktop-companion__card h2 {
+    margin: 4px 0 8px;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+  }
+
+  .desktop-companion__card p {
+    margin: 0 0 12px;
+    color: #56616b;
+    line-height: 1.7;
+  }
+
+  .desktop-companion__primary,
+  .desktop-companion__menu a {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 13px;
+    border: 1px solid var(--app-border);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.78);
+    font-weight: 800;
+  }
+
+  .desktop-companion__primary {
+    justify-content: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #172033, #2f7d57);
+  }
+
+  .desktop-companion__menu {
+    display: grid;
+    gap: 8px;
+  }
+
+  .desktop-companion__menu a small {
+    color: #68737d;
+    font-weight: 700;
+  }
+
+  .desktop-companion__menu .bottom-nav__item--active {
+    color: #16211c;
+    background: rgba(217, 240, 230, 0.92);
+  }
+
+  .app-frame--signed-in .bottom-nav {
+    display: none;
+  }
+
+  body.ai_chats .app-shell,
+  body.ai_chats .app-frame--signed-in .app-shell {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell {
+    padding-inline: 10px;
+  }
+
+  .top-bar__date {
+    display: none;
+  }
+
+  .page-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .inline-actions a,
+  .inline-actions form,
+  .inline-actions button {
+    width: 100%;
+  }
+}

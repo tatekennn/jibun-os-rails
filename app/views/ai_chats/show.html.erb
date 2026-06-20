@@ -4,7 +4,7 @@
   <div>
     <p class="eyebrow">CHAT</p>
     <h1>AIチャット</h1>
-    <p>自然文でアプリ改善や調査を依頼できます。必要な開発前提だけを裏側で添えて送ります。</p>
+    <p>自然文で記録確認やアプリ改善を依頼できます。返答はこの画面へ戻ります。</p>
   </div>
   <%= link_to "ホーム", root_path, class: "ghost-button" %>
 </section>
@@ -32,19 +32,19 @@
       <div>
         <p>AIチャット</p>
         <strong data-ai-chat-target="modeLabel">待機中</strong>
-        <small data-ai-chat-target="statusText">送信すると、この画面にも返信を表示します。</small>
+        <small data-ai-chat-target="statusText">送信すると、Discord通知とHermes実行結果をこの画面へ戻します。</small>
       </div>
     </div>
 
     <div class="ai-dock__log chat-room__log" data-ai-chat-target="log" aria-live="polite">
-      <p class="ai-dock__message ai-dock__message--os"><span>AI</span> 依頼内容を送ってください。調査、コード確認、UI改善の相談に使えます。</p>
+      <p class="ai-dock__message ai-dock__message--os"><span>AI</span> 依頼を送ると、まず受付を表示し、その後Hermesからの完了返信に自動で差し替えます。</p>
     </div>
 
     <div class="ai-dock__chips chat-room__chips" aria-label="依頼テンプレート">
-      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="READMEを読んで、次に直すべきUI改善を1つ提案して。必要ならコードも見て。">UI相談</button>
-      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="この画面の操作感をもっとチャットらしく改善して、テストしてpushして。">変更依頼</button>
+      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="今月いくら使った？？">支出確認</button>
+      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="今日の退勤して">退勤</button>
+      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="READMEと主要画面を見て、全体のUI/UXをよくして。テストしてpushして。">改善依頼</button>
       <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="Render上の実画面を確認して、スマホ表示で気になる点を報告して。">本番確認</button>
-      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="必要な情報を検索して、根拠つきで短くまとめて。">検索</button>
     </div>
 
     <form class="ai-dock__form chat-room__form" data-action="submit->ai-chat#send">

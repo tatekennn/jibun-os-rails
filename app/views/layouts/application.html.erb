@@ -20,37 +20,43 @@
   </head>
 
   <body class="<%= params[:controller].tr("/", "_") %>" <%= tag.attributes(data: logged_in? && params[:controller] == "ai_chats" ? { controller: "ai-chat", ai_chat_default_mode_value: "dashboard", ai_chat_endpoint_value: ai_messages_path(format: :json) } : {}) %>>
-    <div class="app-shell">
-      <header class="top-bar">
-        <%= link_to root_path, class: "brand-lockup", aria: { label: "自分OS ホーム" } do %>
-          <span class="pixel-logo" aria-hidden="true">
-            <span></span><span></span><span></span><span></span>
-          </span>
-          <span>
-            <span class="brand-kicker">JIBUN OS</span>
-            <strong>自分OS</strong>
-          </span>
+    <div class="app-frame <%= "app-frame--signed-in" if logged_in? %>">
+      <div class="app-shell">
+        <header class="top-bar">
+          <%= link_to root_path, class: "brand-lockup", aria: { label: "自分OS ホーム" } do %>
+            <span class="pixel-logo" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+            <span>
+              <span class="brand-kicker">JIBUN OS</span>
+              <strong>自分OS</strong>
+            </span>
+          <% end %>
+          <span class="top-bar__date"><%= l(Date.current, format: :long) %></span>
+          <% if logged_in? %>
+            <%= button_to "ログアウト", logout_path, method: :delete, class: "top-bar__logout" %>
+          <% end %>
+        </header>
+
+        <% if notice.present? %>
+          <p class="flash flash--notice"><%= notice %></p>
         <% end %>
-        <span class="top-bar__date"><%= l(Date.current, format: :long) %></span>
+
+        <% if alert.present? %>
+          <p class="flash flash--alert"><%= alert %></p>
+        <% end %>
+
+        <main class="screen">
+          <%= yield %>
+        </main>
+
         <% if logged_in? %>
-          <%= button_to "ログアウト", logout_path, method: :delete, class: "top-bar__logout" %>
+          <%= render "shared/bottom_nav" %>
         <% end %>
-      </header>
-
-      <% if notice.present? %>
-        <p class="flash flash--notice"><%= notice %></p>
-      <% end %>
-
-      <% if alert.present? %>
-        <p class="flash flash--alert"><%= alert %></p>
-      <% end %>
-
-      <main class="screen">
-        <%= yield %>
-      </main>
+      </div>
 
       <% if logged_in? %>
-        <%= render "shared/bottom_nav" %>
+        <%= render "shared/desktop_companion" %>
       <% end %>
     </div>
   </body>
