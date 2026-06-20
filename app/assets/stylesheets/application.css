@@ -7108,19 +7108,20 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* Dashboard mobile safe-area top v5: mirror non-home header spacing while keeping iPhone/PWA safe-area */
+/* Dashboard mobile safe-area top v6: keep the header in the same visual slot as work/train pages */
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
-      padding-top: env(safe-area-inset-top);
+      padding-top: 0;
     }
 
     body.dashboard .app-shell {
-      padding-top: 10px;
+      min-height: 100dvh;
+      padding-top: calc(10px + env(safe-area-inset-top));
     }
 
     body.dashboard .top-bar {
-      top: env(safe-area-inset-top);
+      top: 0;
       margin: -10px -12px 0;
       padding: 13px 14px 8px;
     }
