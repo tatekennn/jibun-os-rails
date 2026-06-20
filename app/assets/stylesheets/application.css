@@ -7130,18 +7130,58 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* mobile-bottom-nav-stable-v4: keep the signed-in nav viewport-fixed outside app-shell clipping */
+/* mobile-viewport-lock-v1: prevent iOS PWA zoom-out/overscroll from exposing the right-side shell background */
 @media (max-width: 899px) {
-  .app-frame--signed-in > .bottom-nav {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .app-frame,
+  .app-frame--signed-in,
+  .app-shell {
+    width: 100%;
+    max-width: none;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .app-shell,
+  body.dashboard .app-shell,
+  body:not(.home_mocks) .app-shell {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .screen,
+  .page-head,
+  .pixel-card,
+  .reminder-banner,
+  .check-grid,
+  .metric-grid,
+  .status-row,
+  .list-line {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .app-frame--signed-in > .bottom-nav,
+  body:not(.home_mocks) .bottom-nav,
+  body.dashboard .bottom-nav,
+  body.ai_chats .bottom-nav {
     position: fixed;
     top: auto;
-    right: auto;
+    right: 0;
     bottom: 0;
-    left: 50%;
-    width: min(460px, 100vw);
+    left: 0;
+    width: 100%;
+    max-width: 100%;
     margin: 0;
     padding-bottom: calc(7px + env(safe-area-inset-bottom));
-    transform: translate3d(-50%, 0, 0);
+    transform: none;
     z-index: 1000;
   }
 }

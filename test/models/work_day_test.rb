@@ -12,7 +12,7 @@ class WorkDayTest < ActiveSupport::TestCase
 
       work_day.confirm_check_in!
 
-      assert_equal "2026-06-20 22:21", I18n.l(work_day.reload.check_in_confirmed_at, format: :long)
+      assert_equal "2026-06-20 22:21", work_day.reload.check_in_confirmed_at.in_time_zone.strftime("%Y-%m-%d %H:%M")
     end
   end
 
