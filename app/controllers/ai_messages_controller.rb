@@ -17,7 +17,8 @@ class AiMessagesController < ApplicationController
 
     render json: {
       ok: true,
-      message: "#{destination}へ送信しました。必要ならこの内容をもとにアプリを調整します。"
+      message: "#{destination}へ送信しました。",
+      assistant_reply: assistant_reply_for(body: body, mode: mode, hermes_result: hermes_result)
     }
   rescue ::DiscordAppMessageNotifier::DeliveryError => error
     Rails.logger.warn("Discord app message delivery failed: #{error.message}")
@@ -31,5 +32,26 @@ class AiMessagesController < ApplicationController
 
   def message_params
     params.fetch(:message, {}).permit(:body, :mode, :context)
+  end
+
+  def assistant_reply_for(body:, mode:, hermes_result:)
+    prefix = case mode
+    when "rest"
+      "疲れ気味として受け取りました。"
+    when "budget"
+      "節約まわりの相談として受け取りました。"
+    when "lunch"
+      "ランチまわりの相談として受け取りました。"
+    when "hobby"
+      "趣味まわりの相談として受け取りました。"
+    else
+      "内容を受け取りました。"
+    end
+
+    if hermes_result == :skipped
+      "#{prefix} いまはアプリ内の返信だけ表示しています。外部連携を有効にすると、この内容を作業依頼として送れます。"
+    else
+      "#{prefix} 依頼は送信済みです。必要な確認や作業がある場合は、この内容をもとに進めます。"
+    end
   end
 end

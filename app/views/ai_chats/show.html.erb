@@ -1,53 +1,55 @@
-<% content_for :title, "J.A.R.V.I.S.チャット - 自分OS" %>
+<% content_for :title, "AIチャット - 自分OS" %>
 
 <section class="page-head chat-page__head">
   <div>
-    <p class="eyebrow">HERMES BRIDGE</p>
-    <h1>J.A.R.V.I.S.チャット</h1>
-    <p>この画面から送った内容は、前提つきでHermesへ渡します。調査、アプリ変更、検索、push依頼の入口です。</p>
+    <p class="eyebrow">CHAT</p>
+    <h1>AIチャット</h1>
+    <p>自然文でアプリ改善や調査を依頼できます。必要な開発前提だけを裏側で添えて送ります。</p>
   </div>
   <%= link_to "ホーム", root_path, class: "ghost-button" %>
 </section>
 
-<section class="chat-room" aria-label="Hermesチャット">
-  <div class="chat-room__context pixel-card">
-    <div>
-      <p class="eyebrow">Loaded context</p>
-      <h2>渡す前提</h2>
-    </div>
+<section class="chat-room" aria-label="AIチャット">
+  <details class="chat-room__context pixel-card">
+    <summary>
+      <span>
+        <small class="eyebrow">App context</small>
+        <strong>裏側で添える前提</strong>
+      </span>
+    </summary>
     <ul>
       <li>Rails repo: <code>tatekennn/jibun-os-rails</code></li>
       <li>作業ディレクトリ: <code>/opt/data/jibun-os-rails</code></li>
       <li><code>main</code>へpushするとRenderの <code>jibun-os</code> に自動デプロイ</li>
       <li>README、git status、関連ファイルを確認してから作業</li>
-      <li>必要なら検索・コード変更・テスト・commit・pushまで進める</li>
+      <li>このアプリ内チャットでは特定の人格設定や <code>soul.md</code> は前提にしない</li>
     </ul>
-  </div>
+  </details>
 
-  <div class="chat-room__panel ai-dock" aria-label="Hermesへの依頼">
+  <div class="chat-room__panel ai-dock" aria-label="AIへの依頼">
     <div class="ai-dock__header chat-room__assistant">
       <span class="pixel-face" aria-hidden="true"></span>
       <div>
-        <p>J.A.R.V.I.S.</p>
-        <strong data-ai-chat-target="modeLabel">開発補助モード</strong>
-        <small data-ai-chat-target="statusText">前提を添えてHermesへ送ります。</small>
+        <p>AIチャット</p>
+        <strong data-ai-chat-target="modeLabel">待機中</strong>
+        <small data-ai-chat-target="statusText">送信すると、この画面にも返信を表示します。</small>
       </div>
     </div>
 
     <div class="ai-dock__log chat-room__log" data-ai-chat-target="log" aria-live="polite">
-      <p class="ai-dock__message ai-dock__message--os"><span>OS</span> 依頼内容を送ってください。必要ならrepo確認、検索、変更、pushまで進めます。</p>
+      <p class="ai-dock__message ai-dock__message--os"><span>AI</span> 依頼内容を送ってください。調査、コード確認、UI改善の相談に使えます。</p>
     </div>
 
     <div class="ai-dock__chips chat-room__chips" aria-label="依頼テンプレート">
       <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="READMEを読んで、次に直すべきUI改善を1つ提案して。必要ならコードも見て。">UI相談</button>
-      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="この画面の操作感をよりチャットらしく改善して、テストしてpushして。">変更依頼</button>
+      <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="この画面の操作感をもっとチャットらしく改善して、テストしてpushして。">変更依頼</button>
       <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="Render上の実画面を確認して、スマホ表示で気になる点を報告して。">本番確認</button>
       <button type="button" data-action="ai-chat#insertPrompt" data-ai-chat-prompt-param="必要な情報を検索して、根拠つきで短くまとめて。">検索</button>
     </div>
 
     <form class="ai-dock__form chat-room__form" data-action="submit->ai-chat#send">
-      <input type="hidden" data-ai-chat-target="context" value="自分OSRailsアプリの開発依頼。GitHub repo: tatekennn/jibun-os-rails。作業ディレクトリ: /opt/data/jibun-os-rails。mainへpushするとRender Web Service jibun-osへ自動デプロイ。README.md、git status、関連ファイルを確認してから作業。config/master.keyは絶対にGitHubへ入れない。必要に応じて検索、コード変更、テスト、commit、pushまで進める。">
-      <textarea data-ai-chat-target="input" rows="5" placeholder="例: READMEを読んで、今の自分OS Railsアプリで次に直すべきUI改善を1つ提案して。" aria-label="Hermesへの依頼入力" autocomplete="off"></textarea>
+      <input type="hidden" data-ai-chat-target="context" value="自分OSRailsアプリの開発依頼。GitHub repo: tatekennn/jibun-os-rails。作業ディレクトリ: /opt/data/jibun-os-rails。mainへpushするとRender Web Service jibun-osへ自動デプロイ。README.md、git status、関連ファイルを確認してから作業。config/master.keyは絶対にGitHubへ入れない。必要に応じて検索、コード変更、テスト、commit、pushまで進める。アプリ内チャットでは特定の人格設定やsoul.mdは前提にしない。">
+      <textarea data-ai-chat-target="input" rows="4" placeholder="例: チャット画面をもっと使いやすくして。" aria-label="AIチャット入力" autocomplete="off"></textarea>
       <button type="submit" data-ai-chat-target="submitButton">送信</button>
     </form>
   </div>

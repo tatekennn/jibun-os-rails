@@ -26,7 +26,8 @@ class AiMessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal true, payload["ok"]
-    assert_equal "DiscordとHermesへ送信しました。必要ならこの内容をもとにアプリを調整します。", payload["message"]
+    assert_equal "DiscordとHermesへ送信しました。", payload["message"]
+    assert_match "ランチまわりの相談として受け取りました", payload["assistant_reply"]
     assert_equal 1, discord_delivered.size
     assert_equal "ランチ入力をもっと楽にしたい", discord_delivered.first[:body]
     assert_equal "lunch", discord_delivered.first[:mode]

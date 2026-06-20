@@ -51,8 +51,7 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 - 有料列車ログ: 月次回数、合計金額、理由、疲労度
 - 渋谷ランチログ: 価格、満足度、混雑度、一人利用、再訪フラグ、絞り込み
 - 趣味コーナー: 予定とメモをカテゴリ付きで保存
-- AIチャットUI: 入力やチップで画面のフォーカスを変えつつ、投稿内容をDiscordとHermesへ送信
-- J.A.R.V.I.S.チャットページ: repo/Render/push方針などの前提を添えてHermesへ作業依頼を送る画面
+- AIチャットページ: repo/Render/push方針など最低限の開発前提を添えて、DiscordとHermesへ作業依頼を送る画面
 - PWA: manifest、service worker、offlineページ
 
 ## 主要ルート
@@ -67,7 +66,7 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 /lunch_logs/new           ランチ記録フォーム
 /hobby_items              趣味予定・メモ
 /hobby_items/new          趣味記録フォーム
-/ai_chat                  J.A.R.V.I.S.チャットページ
+/ai_chat                  AIチャットページ
 /home_mocks               以前作ったホームデザインモック
 /manifest                 PWA manifest
 /service-worker           Service Worker
@@ -84,11 +83,8 @@ app/views/dashboard/index.html.erb
 app/assets/stylesheets/application.css
   ほぼ全体のデザイン。スマホ/PCレスポンシブもここ。
 
-app/views/shared/_ai_chat.html.erb
-  画面下部/右側のAIチャットUI。
-
 app/views/ai_chats/show.html.erb
-  J.A.R.V.I.S.チャットページ。repo、Render、push方針などの前提を添えてHermesへ依頼を送る。
+  AIチャットページ。repo、Render、push方針などの前提を添えてHermesへ依頼を送る。
 
 app/javascript/controllers/ai_chat_controller.js
   AIチャット風UIのモード切り替え。現時点では本物のAI API連携なし。
@@ -109,18 +105,18 @@ config/database.yml
 ## デザイン方針
 
 - スマホではアプリ風の縦画面にする
-- 下部ナビとAI入力欄を持つPWAらしい体験にする
-- PCでは左にメイン、右にAIチャットとメニューを置く2カラム
+- 下部ナビは日常記録の主要5項目に絞り、ホームにはチャット入力欄を常設しない
+- PCでは主要画面を読みやすく保ち、チャットは専用ページで扱う
 - 以前はドット絵風の方向性も試したが、現在は透明感のある洗練されたアプリUIをベースにしている
 - ただし、過度にAIっぽい、SFっぽい、装飾過多な見た目にはしない
 - 小さな個人アプリとして、毎日触っても疲れない密度と落ち着きを優先する
 
 ## AIチャットUIの現状
 
-AIチャットUIは、Stimulusで入力文を見て`data-ai-mode`を切り替え、画面上の強調対象を変えます。
-加えて、環境変数が設定されていれば投稿内容をDiscord WebhookとHermes Webhookへ送ります。
+AIチャットページは、Stimulusで送信中の状態、ユーザー発話、アプリ内返信をチャット風に表示します。
+環境変数が設定されていれば投稿内容をDiscord WebhookとHermes Webhookへ送ります。
 
-`/ai_chat` は、通常の下部チャットよりも長文依頼向けの専用ページです。repo、Render、push方針、README確認、秘密情報をGitHubへ入れないことなどの前提をhidden contextとしてHermesへ同梱します。
+`/ai_chat` は、repo、Render、push方針、README確認、秘密情報をGitHubへ入れないことなどの前提をhidden contextとしてHermesへ同梱します。アプリ内チャットでは特定の人格設定や`soul.md`は前提にしません。
 
 現在の判定例:
 

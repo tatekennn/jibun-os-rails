@@ -33,7 +33,7 @@ export default class extends Controller {
     const mode = this.modeFromText(text)
     this.appendLine("YOU", text)
     this.inputTarget.value = ""
-    this.applyMode(mode)
+    this.applyMode(mode, false)
     await this.forwardToHermes(text, mode)
   }
 
@@ -94,6 +94,7 @@ export default class extends Controller {
     if (!this.hasEndpointValue) return
 
     try {
+      this.showThinking()
       const context = this.hasContextTarget ? this.contextTarget.value : ""
       const response = await fetch(this.endpointValue, {
         method: "POST",
@@ -105,14 +106,16 @@ export default class extends Controller {
         body: JSON.stringify({ message: { body: text, mode, context } })
       })
       const payload = await response.json()
+      this.hideThinking()
 
       if (response.ok && payload.ok) {
-        this.appendLine("OS", payload.message)
+        this.appendLine("AI", payload.assistant_reply || payload.message)
       } else {
-        this.appendLine("OS", payload.message || "Hermesへの送信に失敗しました。")
+        this.appendLine("AI", payload.message || "送信に失敗しました。")
       }
     } catch (_error) {
-      this.appendLine("OS", "Hermesへの送信に失敗しました。通信状態を確認してください。")
+      this.hideThinking()
+      this.appendLine("AI", "送信に失敗しました。通信状態を確認してください。")
     }
   }
 
@@ -126,9 +129,9 @@ export default class extends Controller {
     line.className = "ai-dock__message ai-dock__message--thinking"
     line.dataset.thinking = "true"
     const badge = document.createElement("span")
-    badge.textContent = "OS"
+    badge.textContent = "AI"
     line.appendChild(badge)
-    line.append(" 調整しています…")
+    line.append(" 考えています…")
     this.logTarget.appendChild(line)
     this.logTarget.scrollTop = this.logTarget.scrollHeight
   }

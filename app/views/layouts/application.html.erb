@@ -19,7 +19,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="<%= params[:controller].tr("/", "_") %>" <%= tag.attributes(data: logged_in? ? { controller: "ai-chat", ai_chat_default_mode_value: "dashboard", ai_chat_endpoint_value: ai_messages_path(format: :json) } : {}) %>>
+  <body class="<%= params[:controller].tr("/", "_") %>" <%= tag.attributes(data: logged_in? && params[:controller] == "ai_chats" ? { controller: "ai-chat", ai_chat_default_mode_value: "dashboard", ai_chat_endpoint_value: ai_messages_path(format: :json) } : {}) %>>
     <div class="app-shell">
       <header class="top-bar">
         <%= link_to root_path, class: "brand-lockup", aria: { label: "自分OS ホーム" } do %>
@@ -49,10 +49,7 @@
         <%= yield %>
       </main>
 
-      <% if logged_in? && params[:controller] != "ai_chats" %>
-        <%= render "shared/ai_chat" %>
-        <%= render "shared/bottom_nav" %>
-      <% elsif logged_in? %>
+      <% if logged_in? %>
         <%= render "shared/bottom_nav" %>
       <% end %>
     </div>
