@@ -30,6 +30,53 @@
   </div>
 </section>
 
+<section
+  class="pixel-card work-reminder-card"
+  data-controller="work-reminder"
+  data-work-reminder-date-value="<%= @work_day.date.iso8601 %>"
+  data-work-reminder-check-in-confirmed-value="<%= @work_day.check_in_confirmed? %>"
+  data-work-reminder-check-out-confirmed-value="<%= @work_day.check_out_confirmed? %>"
+>
+  <div class="work-reminder-card__head">
+    <div>
+      <p class="eyebrow">REMINDER</p>
+      <h2>打刻通知</h2>
+      <p class="card-note">出勤・退勤の確認時刻を端末に通知します。</p>
+    </div>
+    <label class="switch-field">
+      <input
+        type="checkbox"
+        data-work-reminder-target="enabled"
+        data-action="work-reminder#toggle"
+      >
+      <span>ON</span>
+    </label>
+  </div>
+
+  <div class="reminder-time-grid">
+    <label>
+      <span>出勤通知</span>
+      <input
+        type="time"
+        value="09:30"
+        data-work-reminder-target="checkInTime"
+        data-action="change->work-reminder#saveFromForm"
+      >
+    </label>
+    <label>
+      <span>退勤通知</span>
+      <input
+        type="time"
+        value="18:30"
+        data-work-reminder-target="checkOutTime"
+        data-action="change->work-reminder#saveFromForm"
+      >
+    </label>
+  </div>
+
+  <p class="reminder-status" data-work-reminder-target="status">OFF: 時刻を選んでONにできます。</p>
+</section>
+
 <section class="pixel-card">
   <h2>メモ</h2>
   <%= form_with model: @work_day, class: "pixel-form" do |form| %>

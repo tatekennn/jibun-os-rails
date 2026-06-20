@@ -2809,6 +2809,83 @@ body:not(.home_mocks) .check-tile {
   align-content: start;
 }
 
+body:not(.home_mocks) .work-reminder-card {
+  display: grid;
+  gap: 14px;
+}
+
+body:not(.home_mocks) .work-reminder-card__head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+body:not(.home_mocks) .work-reminder-card__head h2 {
+  margin: 2px 0 4px;
+}
+
+body:not(.home_mocks) .switch-field {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: #f8fafb;
+  color: var(--app-ink);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+body:not(.home_mocks) .switch-field input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--app-accent);
+}
+
+body:not(.home_mocks) .reminder-time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body:not(.home_mocks) .reminder-time-grid label {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid var(--app-line);
+  border-radius: 12px;
+  background: #f8fafb;
+}
+
+body:not(.home_mocks) .reminder-time-grid span {
+  color: #5f6770;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+body:not(.home_mocks) .reminder-time-grid input {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 10px;
+  border: 1px solid var(--app-line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--app-ink);
+  font: inherit;
+  font-weight: 850;
+}
+
+body:not(.home_mocks) .reminder-status {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
 body:not(.home_mocks) .card-icon {
   border: 0;
   border-radius: 8px;
