@@ -1870,6 +1870,12 @@ body.dashboard .bottom-nav__item:active {
   background: linear-gradient(135deg, #7a4bb3, #b08ae0);
 }
 
+.home-subscbox__logo--chat {
+  background: linear-gradient(135deg, #0f766e, #5eead4);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
 .home-subscbox__row form {
   justify-self: end;
   margin: 0;

@@ -48,6 +48,15 @@
   <section class="home-subscbox__list" aria-label="今日の項目">
     <h2>管理中の項目</h2>
 
+    <%= link_to ai_chat_path, class: "home-subscbox__row focus-chat" do %>
+      <span class="home-subscbox__logo home-subscbox__logo--chat" aria-hidden="true">AI</span>
+      <div>
+        <strong>AIチャット</strong>
+        <small>相談・検索・変更依頼を送る</small>
+      </div>
+      <em>›</em>
+    <% end %>
+
     <div class="home-subscbox__row focus-work">
       <span class="home-subscbox__logo home-subscbox__logo--work" aria-hidden="true">出</span>
       <div>
