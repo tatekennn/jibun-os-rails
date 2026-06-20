@@ -13,6 +13,14 @@ class AiMessagesController < ApplicationController
 
     ai_message = AiMessage.create!(body: body, mode: mode, context: context)
 
+    local_reply = handle_local_command(body)
+    if local_reply.present?
+      ai_message.complete!(reply: local_reply)
+      ai_message.update!(delivery_message: "アプリ内で処理しました。")
+      render json: serialize_message(ai_message, initial: true)
+      return
+    end
+
     ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request)
     hermes_result = ::HermesAppMessageNotifier.call(
       body: body,
@@ -61,6 +69,22 @@ class AiMessagesController < ApplicationController
       assistant_reply: ai_message.assistant_reply.presence || pending_reply_for(ai_message, initial: initial),
       completed: ai_message.finished?
     }
+  end
+
+  def handle_local_command(body)
+    normalized_body = body.to_s.tr("　", " ").strip
+
+    if normalized_body.match?(/退勤/) && normalized_body.match?(/今日|きょう|して|打刻|確認/)
+      work_day = WorkDay.today
+      already_confirmed = work_day.check_out_confirmed?
+      work_day.confirm_check_out!
+
+      if already_confirmed
+        "今日の退勤打刻はすでに確認済みでした。念のため、確認時刻を更新しました。"
+      else
+        "今日の退勤打刻を確認済みにしました。お疲れさまでした。"
+      end
+    end
   end
 
   def pending_reply_for(ai_message, initial: false)
