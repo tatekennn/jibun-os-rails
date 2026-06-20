@@ -1,0 +1,12 @@
+<% content_for :title, "趣味アイテム - 自分OS" %>
+
+<section class="page-head">
+  <p class="eyebrow">HOBBY DETAIL</p>
+  <h1><%= @hobby_item.title %></h1>
+  <%= link_to "一覧へ", hobby_items_path, class: "pixel-button" %>
+</section>
+
+<article class="pixel-card">
+  <p class="card-note"><%= @hobby_item.category %> / <%= @hobby_item.status %></p>
+  <p><%= @hobby_item.body %></p>
+</article>

@@ -1,0 +1,13 @@
+<% content_for :title, "ランチログ - 自分OS" %>
+
+<section class="page-head">
+  <p class="eyebrow">LUNCH DETAIL</p>
+  <h1><%= @lunch_log.shop_name %></h1>
+  <%= link_to "一覧へ", lunch_logs_path, class: "pixel-button" %>
+</section>
+
+<article class="pixel-card">
+  <p class="list-line"><strong><%= short_date(@lunch_log.visited_on) %></strong><span><%= yen(@lunch_log.price) %> <%= rating_stars(@lunch_log.rating) %></span></p>
+  <p class="card-note"><%= @lunch_log.area %> / <%= @lunch_log.crowdedness %></p>
+  <p><%= @lunch_log.memo %></p>
+</article>

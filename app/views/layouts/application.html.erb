@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title><%= content_for(:title) || "自分OS" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="自分OS">
+    <meta name="theme-color" content="#13bfb6">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="<%= params[:controller].tr("/", "_") %>" data-controller="ai-chat" data-ai-chat-default-mode-value="dashboard">
+    <div class="app-shell">
+      <header class="top-bar">
+        <%= link_to root_path, class: "brand-lockup", aria: { label: "自分OS ホーム" } do %>
+          <span class="pixel-logo" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span>
+            <span class="brand-kicker">JIBUN OS</span>
+            <strong>自分OS</strong>
+          </span>
+        <% end %>
+        <span class="top-bar__date"><%= l(Date.current, format: :long) %></span>
+      </header>
+
+      <% if notice.present? %>
+        <p class="flash flash--notice"><%= notice %></p>
+      <% end %>
+
+      <% if alert.present? %>
+        <p class="flash flash--alert"><%= alert %></p>
+      <% end %>
+
+      <main class="screen">
+        <%= yield %>
+      </main>
+
+      <%= render "shared/ai_chat" %>
+      <%= render "shared/bottom_nav" %>
+    </div>
+  </body>
+</html>

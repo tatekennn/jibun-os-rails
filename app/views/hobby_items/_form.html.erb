@@ -1,0 +1,70 @@
+<%= form_with(model: hobby_item, class: "pixel-form pixel-card") do |form| %>
+  <% if hobby_item.errors.any? %>
+    <div class="error-box">
+      <h2>保存できませんでした</h2>
+      <ul>
+        <% hobby_item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, "タイトル" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :category, "カテゴリ" %>
+    <%= form.text_field :category, placeholder: "ライブ、DJ、読書、技術" %>
+  </div>
+
+  <div>
+    <%= form.label :item_type, "種類" %>
+    <%= form.select :item_type, [["予定", "event"], ["メモ", "memo"]] %>
+  </div>
+
+  <div>
+    <%= form.label :scheduled_on, "日付" %>
+    <%= form.date_field :scheduled_on %>
+  </div>
+
+  <div>
+    <%= form.label :location, "場所" %>
+    <%= form.text_field :location %>
+  </div>
+
+  <div>
+    <%= form.label :cost, "費用" %>
+    <%= form.number_field :cost %>
+  </div>
+
+  <div>
+    <%= form.label :url, "URL" %>
+    <%= form.url_field :url %>
+  </div>
+
+  <div>
+    <%= form.label :body, "本文" %>
+    <%= form.text_area :body %>
+  </div>
+
+  <div class="range-field">
+    <div class="range-field__label">
+      <%= form.label :rating, "評価" %>
+      <span><%= hobby_item.rating.presence || 3 %>/5</span>
+    </div>
+    <%= form.range_field :rating, min: 1, max: 5 %>
+  </div>
+
+  <div>
+    <%= form.label :status, "ステータス" %>
+    <%= form.select :status, [["予定", "planned"], ["完了", "done"], ["保管", "archived"]] %>
+  </div>
+
+  <div>
+    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
+    <%= link_to "戻る", hobby_items_path, class: "text-link" %>
+  </div>
+<% end %>

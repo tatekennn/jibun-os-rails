@@ -1,0 +1,22 @@
+databases:
+  - name: jibun-os-db
+    plan: free
+    databaseName: jibun_os
+    user: jibun_os
+
+services:
+  - type: web
+    name: jibun-os
+    runtime: ruby
+    plan: free
+    buildCommand: bundle install && bin/rails assets:precompile && bin/rails db:migrate
+    startCommand: bin/rails server -b 0.0.0.0 -p $PORT
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jibun-os-db
+          property: connectionString

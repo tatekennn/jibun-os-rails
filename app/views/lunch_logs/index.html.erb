@@ -1,0 +1,65 @@
+<% content_for :title, "渋谷ランチログ - 自分OS" %>
+
+<section class="page-head focus-lunch">
+  <p class="eyebrow">LUNCH DB</p>
+  <h1>渋谷ランチログ</h1>
+  <%= link_to "ランチを記録", new_lunch_log_path, class: "pixel-button pixel-button--green" %>
+</section>
+
+<section class="pixel-card focus-lunch">
+  <div class="metric-grid">
+    <div>
+      <span>今月</span>
+      <strong><%= @month_lunch_logs.count %>件</strong>
+    </div>
+    <div>
+      <span>平均価格</span>
+      <strong><%= yen(@average_price) %></strong>
+    </div>
+  </div>
+</section>
+
+<section class="pixel-card">
+  <p class="eyebrow">FILTER</p>
+  <%= form_with url: lunch_logs_path, method: :get, class: "filter-grid" do |form| %>
+    <label><%= check_box_tag :under_1000, "1", params[:under_1000].present? %><span>1000円以下</span></label>
+    <label><%= check_box_tag :rating_4, "1", params[:rating_4].present? %><span>★4以上</span></label>
+    <label><%= check_box_tag :solo, "1", params[:solo].present? %><span>一人OK</span></label>
+    <label><%= check_box_tag :not_crowded, "1", params[:not_crowded].present? %><span>混んでない</span></label>
+    <label><%= check_box_tag :repeat, "1", params[:repeat].present? %><span>また行く</span></label>
+    <%= form.submit "絞り込む", class: "pixel-button pixel-button--full" %>
+  <% end %>
+</section>
+
+<% if @recommendations.any? %>
+  <section class="pixel-card focus-lunch">
+    <p class="eyebrow">PICKS</p>
+    <h2>おすすめ</h2>
+    <% @recommendations.each do |lunch_log| %>
+      <p class="list-line"><strong><%= lunch_log.shop_name %></strong><span><%= yen(lunch_log.price) %> <%= rating_stars(lunch_log.rating) %></span></p>
+    <% end %>
+  </section>
+<% end %>
+
+<section class="log-list">
+  <% @lunch_logs.each do |lunch_log| %>
+    <article class="pixel-card compact-card">
+      <div class="list-line">
+        <strong><%= lunch_log.shop_name %></strong>
+        <span><%= rating_stars(lunch_log.rating) %></span>
+      </div>
+      <p class="card-note"><%= short_date(lunch_log.visited_on) %> / <%= lunch_log.area %> / <%= yen(lunch_log.price) %> / <%= lunch_log.crowdedness %></p>
+      <div class="tag-row">
+        <% if lunch_log.solo_friendly? %><span>一人OK</span><% end %>
+        <% if lunch_log.repeat? %><span>また行く</span><% end %>
+      </div>
+      <% if lunch_log.memo.present? %>
+        <p><%= lunch_log.memo %></p>
+      <% end %>
+      <div class="inline-actions">
+        <%= link_to "編集", edit_lunch_log_path(lunch_log) %>
+        <%= button_to "削除", lunch_log_path(lunch_log), method: :delete, data: { turbo_confirm: "このランチログを削除しますか？" } %>
+      </div>
+    </article>
+  <% end %>
+</section>

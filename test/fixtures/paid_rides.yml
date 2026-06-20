@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  used_on: 2026-06-17
+  line_name: MyString
+  direction: MyString
+  fare: 1
+  reason: MyString
+  fatigue_level: 1
+  memo: MyText
+
+two:
+  used_on: 2026-06-17
+  line_name: MyString
+  direction: MyString
+  fare: 1
+  reason: MyString
+  fatigue_level: 1
+  memo: MyText

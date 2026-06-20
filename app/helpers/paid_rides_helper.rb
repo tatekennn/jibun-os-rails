@@ -1,0 +1,2 @@
+module PaidRidesHelper
+end

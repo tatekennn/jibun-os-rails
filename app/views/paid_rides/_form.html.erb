@@ -1,0 +1,55 @@
+<%= form_with(model: paid_ride, class: "pixel-form pixel-card") do |form| %>
+  <% if paid_ride.errors.any? %>
+    <div class="error-box">
+      <h2>保存できませんでした</h2>
+      <ul>
+        <% paid_ride.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :used_on, "乗った日" %>
+    <%= form.date_field :used_on %>
+  </div>
+
+  <div>
+    <%= form.label :line_name, "路線名" %>
+    <%= form.text_field :line_name %>
+  </div>
+
+  <div>
+    <%= form.label :direction, "方向" %>
+    <%= form.text_field :direction %>
+  </div>
+
+  <div>
+    <%= form.label :fare, "金額" %>
+    <%= form.number_field :fare %>
+  </div>
+
+  <div>
+    <%= form.label :reason, "理由" %>
+    <%= form.text_field :reason %>
+  </div>
+
+  <div class="range-field">
+    <div class="range-field__label">
+      <%= form.label :fatigue_level, "疲労度" %>
+      <span><%= paid_ride.fatigue_level.presence || 3 %>/5</span>
+    </div>
+    <%= form.range_field :fatigue_level, min: 1, max: 5 %>
+  </div>
+
+  <div>
+    <%= form.label :memo, "メモ" %>
+    <%= form.text_area :memo %>
+  </div>
+
+  <div>
+    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
+    <%= link_to "戻る", paid_rides_path, class: "text-link" %>
+  </div>
+<% end %>

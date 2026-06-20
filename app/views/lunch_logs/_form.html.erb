@@ -1,0 +1,65 @@
+<%= form_with(model: lunch_log, class: "pixel-form pixel-card") do |form| %>
+  <% if lunch_log.errors.any? %>
+    <div class="error-box">
+      <h2>保存できませんでした</h2>
+      <ul>
+        <% lunch_log.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :visited_on, "行った日" %>
+    <%= form.date_field :visited_on %>
+  </div>
+
+  <div>
+    <%= form.label :shop_name, "店名" %>
+    <%= form.text_field :shop_name %>
+  </div>
+
+  <div>
+    <%= form.label :area, "エリア" %>
+    <%= form.text_field :area %>
+  </div>
+
+  <div>
+    <%= form.label :price, "価格" %>
+    <%= form.number_field :price %>
+  </div>
+
+  <div class="range-field">
+    <div class="range-field__label">
+      <%= form.label :rating, "満足度" %>
+      <span><%= lunch_log.rating.presence || 3 %>/5</span>
+    </div>
+    <%= form.range_field :rating, min: 1, max: 5 %>
+  </div>
+
+  <div>
+    <%= form.label :crowdedness, "混雑度" %>
+    <%= form.select :crowdedness, ["空いてる", "普通", "混んでる"] %>
+  </div>
+
+  <div class="check-line">
+    <%= form.check_box :solo_friendly %>
+    <%= form.label :solo_friendly, "一人で入りやすい？" %>
+  </div>
+
+  <div class="check-line">
+    <%= form.check_box :repeat %>
+    <%= form.label :repeat, "また行く？" %>
+  </div>
+
+  <div>
+    <%= form.label :memo, "メモ" %>
+    <%= form.text_area :memo %>
+  </div>
+
+  <div>
+    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
+    <%= link_to "戻る", lunch_logs_path, class: "text-link" %>
+  </div>
+<% end %>

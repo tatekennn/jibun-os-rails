@@ -1,0 +1,22 @@
+<nav class="bottom-nav" aria-label="メインメニュー">
+  <%= link_to root_path, class: active_nav_class("dashboard"), aria: active_nav_aria("dashboard") do %>
+    <span class="nav-symbol nav-symbol--home" aria-hidden="true"></span>
+    <span>ホーム</span>
+  <% end %>
+  <%= link_to today_work_days_path, class: active_nav_class("work_days"), aria: active_nav_aria("work_days") do %>
+    <span class="nav-symbol nav-symbol--work" aria-hidden="true"></span>
+    <span>打刻</span>
+  <% end %>
+  <%= link_to paid_rides_path, class: active_nav_class("paid_rides"), aria: active_nav_aria("paid_rides") do %>
+    <span class="nav-symbol nav-symbol--ride" aria-hidden="true"></span>
+    <span>列車</span>
+  <% end %>
+  <%= link_to lunch_logs_path, class: active_nav_class("lunch_logs"), aria: active_nav_aria("lunch_logs") do %>
+    <span class="nav-symbol nav-symbol--lunch" aria-hidden="true"></span>
+    <span>ランチ</span>
+  <% end %>
+  <%= link_to hobby_items_path, class: active_nav_class("hobby_items"), aria: active_nav_aria("hobby_items") do %>
+    <span class="nav-symbol nav-symbol--hobby" aria-hidden="true"></span>
+    <span>趣味</span>
+  <% end %>
+</nav>

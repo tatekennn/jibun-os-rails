@@ -1,0 +1,41 @@
+<% content_for :title, "有料列車ログ - 自分OS" %>
+
+<section class="page-head focus-budget">
+  <p class="eyebrow">PAID TRAIN</p>
+  <h1>有料列車ログ</h1>
+  <%= link_to "今日乗った", new_paid_ride_path, class: "pixel-button pixel-button--yellow" %>
+</section>
+
+<section class="pixel-card focus-budget">
+  <p class="eyebrow"><%= Date.current.year %>年<%= Date.current.month %>月</p>
+  <div class="metric-grid">
+    <div>
+      <span>利用回数</span>
+      <strong><%= @month_paid_rides.count %>回</strong>
+    </div>
+    <div>
+      <span>合計金額</span>
+      <strong><%= yen(@month_total_fare) %></strong>
+    </div>
+  </div>
+  <p class="card-note"><%= @monthly_comment %></p>
+</section>
+
+<section class="log-list">
+  <% @paid_rides.each do |paid_ride| %>
+    <article class="pixel-card compact-card">
+      <div class="list-line">
+        <strong><%= short_date(paid_ride.used_on) %></strong>
+        <span><%= paid_ride.line_name %> <%= yen(paid_ride.fare) %></span>
+      </div>
+      <p class="card-note"><%= paid_ride.direction.presence || "方向未入力" %> / <%= paid_ride.reason.presence || "理由なし" %> / 疲労<%= paid_ride.fatigue_level %></p>
+      <% if paid_ride.memo.present? %>
+        <p><%= paid_ride.memo %></p>
+      <% end %>
+      <div class="inline-actions">
+        <%= link_to "編集", edit_paid_ride_path(paid_ride) %>
+        <%= button_to "削除", paid_ride_path(paid_ride), method: :delete, data: { turbo_confirm: "この有料列車ログを削除しますか？" } %>
+      </div>
+    </article>
+  <% end %>
+</section>

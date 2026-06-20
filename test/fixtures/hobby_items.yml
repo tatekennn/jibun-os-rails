@@ -1,0 +1,23 @@
+one:
+  title: テストライブ
+  category: ライブ
+  item_type: event
+  scheduled_on: 2026-06-22
+  location: 大阪
+  cost: 9800
+  url: https://example.com
+  body: テスト本文
+  rating: 4
+  status: planned
+
+two:
+  title: テストメモ
+  category: 技術
+  item_type: memo
+  scheduled_on: 2026-06-17
+  location:
+  cost: 0
+  url:
+  body: メモ本文
+  rating: 5
+  status: done

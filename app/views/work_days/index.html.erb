@@ -1,0 +1,25 @@
+<% content_for :title, "打刻履歴 - 自分OS" %>
+
+<section class="page-head">
+  <p class="eyebrow">WORK LOG</p>
+  <h1>打刻履歴</h1>
+  <%= link_to "今日の打刻", today_work_days_path, class: "pixel-button" %>
+</section>
+
+<section class="log-list">
+  <% @work_days.each do |work_day| %>
+    <article class="pixel-card compact-card">
+      <div>
+        <p class="eyebrow"><%= short_date(work_day.date) %></p>
+        <h2><%= work_day.date.strftime("%Y/%m/%d") %></h2>
+      </div>
+      <div class="mini-status">
+        <span class="<%= work_day.check_in_confirmed? ? "ok" : "ng" %>">出勤 <%= status_chip(work_day.check_in_confirmed?) %></span>
+        <span class="<%= work_day.check_out_confirmed? ? "ok" : "ng" %>">退勤 <%= status_chip(work_day.check_out_confirmed?) %></span>
+      </div>
+      <% if work_day.memo.present? %>
+        <p class="card-note"><%= work_day.memo %></p>
+      <% end %>
+    </article>
+  <% end %>
+</section>

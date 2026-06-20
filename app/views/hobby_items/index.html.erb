@@ -1,0 +1,57 @@
+<% content_for :title, "趣味コーナー - 自分OS" %>
+
+<section class="page-head focus-hobby">
+  <p class="eyebrow">HOBBY SLOT</p>
+  <h1>趣味コーナー</h1>
+  <div class="split-actions">
+    <%= link_to "予定", new_hobby_item_path(item_type: "event"), class: "pixel-button pixel-button--blue" %>
+    <%= link_to "メモ", new_hobby_item_path(item_type: "memo"), class: "pixel-button pixel-button--green" %>
+  </div>
+</section>
+
+<section class="pixel-card focus-hobby">
+  <p class="eyebrow">NEXT EVENT</p>
+  <% if @next_hobby_item %>
+    <h2><%= short_date(@next_hobby_item.scheduled_on) %> <%= @next_hobby_item.title %></h2>
+    <p class="card-note"><%= @next_hobby_item.category %> / <%= @next_hobby_item.location.presence || "場所未定" %> / <%= yen(@next_hobby_item.cost) %></p>
+  <% else %>
+    <h2>次の予定なし</h2>
+    <p class="card-note">空きスロット。</p>
+  <% end %>
+</section>
+
+<% if @recent_memos.any? %>
+  <section class="pixel-card">
+    <p class="eyebrow">RECENT MEMO</p>
+    <% @recent_memos.each do |memo| %>
+      <p class="list-line"><strong><%= memo.category.presence || "メモ" %></strong><span><%= memo.title %></span></p>
+    <% end %>
+  </section>
+<% end %>
+
+<section class="log-list">
+  <% @hobby_items.each do |hobby_item| %>
+    <article class="pixel-card compact-card">
+      <div class="list-line">
+        <strong><%= hobby_item.title %></strong>
+        <span><%= hobby_item.item_type == "event" ? "予定" : "メモ" %></span>
+      </div>
+      <p class="card-note">
+        <%= hobby_item.category.presence || "未分類" %>
+        <% if hobby_item.scheduled_on %> / <%= short_date(hobby_item.scheduled_on) %><% end %>
+        <% if hobby_item.location.present? %> / <%= hobby_item.location %><% end %>
+      </p>
+      <% if hobby_item.body.present? %>
+        <p><%= truncate(hobby_item.body, length: 64) %></p>
+      <% end %>
+      <div class="tag-row">
+        <span><%= hobby_item.status %></span>
+        <% if hobby_item.rating.present? %><span><%= rating_stars(hobby_item.rating) %></span><% end %>
+      </div>
+      <div class="inline-actions">
+        <%= link_to "編集", edit_hobby_item_path(hobby_item) %>
+        <%= button_to "削除", hobby_item_path(hobby_item), method: :delete, data: { turbo_confirm: "この趣味アイテムを削除しますか？" } %>
+      </div>
+    </article>
+  <% end %>
+</section>

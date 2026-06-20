@@ -1,0 +1,13 @@
+<% content_for :title, "有料列車ログ - 自分OS" %>
+
+<section class="page-head">
+  <p class="eyebrow">RIDE DETAIL</p>
+  <h1><%= @paid_ride.line_name %></h1>
+  <%= link_to "一覧へ", paid_rides_path, class: "pixel-button" %>
+</section>
+
+<article class="pixel-card">
+  <p class="list-line"><strong><%= short_date(@paid_ride.used_on) %></strong><span><%= yen(@paid_ride.fare) %></span></p>
+  <p class="card-note"><%= @paid_ride.direction %> / <%= @paid_ride.reason %> / 疲労<%= @paid_ride.fatigue_level %></p>
+  <p><%= @paid_ride.memo %></p>
+</article>

@@ -1,0 +1,480 @@
+<% content_for :title, "ホームモック - 自分OS" %>
+
+<section class="concept-intro">
+  <p class="eyebrow">HOME DESIGN CONCEPTS</p>
+  <h1>ホーム案</h1>
+  <p>先頭案は、HUDのかっこよさを残しながら、毎日触るアプリのホームとして成立するように磨いています。</p>
+</section>
+
+<nav class="mock-jump" aria-label="モック一覧">
+  <a href="#mock-01"><span>01</span>HUD</a>
+  <a href="#mock-02"><span>02</span>Minimal</a>
+  <a href="#mock-03"><span>03</span>Transit</a>
+  <a href="#mock-04"><span>04</span>Room</a>
+  <a href="#mock-05"><span>05</span>Quest</a>
+  <a href="#mock-06"><span>06</span>Paper</a>
+  <a href="#mock-07"><span>07</span>Watch</a>
+  <a href="#mock-08"><span>08</span>Flight</a>
+  <a href="#mock-09"><span>09</span>Neon</a>
+  <a href="#mock-10"><span>10</span>Command</a>
+  <a href="#mock-11"><span>11</span>Glass</a>
+  <a href="#mock-12"><span>12</span>Mono</a>
+</nav>
+
+<section class="concept-board" aria-label="ホームデザイン案">
+  <article id="mock-01" class="mock-variant concept-card concept-card--wide">
+    <header class="concept-label">
+      <span>01</span>
+      <div>
+        <h2>Suit Diagnostics HUD</h2>
+        <p>黒背景、円形レーダー、診断パネル、ONLINE表示。かなりこの方向。</p>
+      </div>
+    </header>
+
+    <div class="suit-hud">
+      <div class="suit-hud__noise" aria-hidden="true"></div>
+      <div class="suit-hud__visor" aria-hidden="true"></div>
+      <svg class="suit-hud__vectors" viewBox="0 0 1120 620" aria-hidden="true">
+        <defs>
+          <linearGradient id="hud-blue" x1="0" x2="1">
+            <stop offset="0" stop-color="#6fd5ff" stop-opacity="0"/>
+            <stop offset="0.5" stop-color="#6fd5ff" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#6fd5ff" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="hud-amber" x1="0" x2="1">
+            <stop offset="0" stop-color="#ff8b3d" stop-opacity="0"/>
+            <stop offset="0.5" stop-color="#ffbf69" stop-opacity="0.85"/>
+            <stop offset="1" stop-color="#ff8b3d" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="hud-glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <path class="vector vector--soft" d="M84 440 C220 250, 400 168, 616 210 S922 254, 1060 92"/>
+        <path class="vector vector--bright" d="M106 510 C292 382, 388 360, 520 392 S746 470, 1030 284"/>
+        <path class="vector vector--amber" d="M214 112 C390 18, 706 10, 934 136"/>
+        <path class="vector vector--thin" d="M138 346 C304 292, 454 280, 620 318 C764 352, 876 350, 1012 284"/>
+        <path class="vector vector--dash" d="M66 250 C258 196, 388 94, 566 112 C760 132, 884 224, 1048 214"/>
+        <path class="vector vector--beam" d="M286 404 L646 314 L1036 106"/>
+        <path class="vector vector--beam vector--beam2" d="M306 438 L656 352 L1010 462"/>
+      </svg>
+      <div class="suit-hud__speed-lines" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="suit-hud__top-scale" aria-hidden="true">
+        <span>W</span>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <strong>N</strong>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <span>E</span>
+      </div>
+      <div class="suit-hud__appbar">
+        <span>JIBUN OS</span>
+        <strong>Life Support / 06.17 WED</strong>
+      </div>
+
+      <div class="suit-hud__compass" aria-hidden="true"><span>N</span></div>
+      <div class="suit-hud__diag">
+        <strong>SELF DIAGNOSTICS</strong>
+        <div class="suit-hud__bars">
+          <p><span>WORK</span><i style="height: 42%"></i><em>42</em></p>
+          <p><span>RIDE</span><i style="height: 68%"></i><em>68</em></p>
+          <p><span>LUNCH</span><i style="height: 84%"></i><em>84</em></p>
+          <p><span>HOBBY</span><i style="height: 58%"></i><em>58</em></p>
+        </div>
+        <div class="suit-hud__wave">
+          <span></span><span></span><span></span>
+        </div>
+        <small>SUPPORT SYSTEMS OPERATIONAL</small>
+      </div>
+
+      <div class="suit-hud__person" aria-hidden="true">
+        <span class="suit-hud__head"></span>
+        <span class="suit-hud__torso"></span>
+        <span class="suit-hud__arm suit-hud__arm--l"></span>
+        <span class="suit-hud__arm suit-hud__arm--r"></span>
+        <span class="suit-hud__leg suit-hud__leg--l"></span>
+        <span class="suit-hud__leg suit-hud__leg--r"></span>
+      </div>
+
+      <div class="suit-hud__radar">
+        <div class="suit-hud__ring suit-hud__ring--outer"></div>
+        <div class="suit-hud__ring suit-hud__ring--middle"></div>
+        <div class="suit-hud__ring suit-hud__ring--inner"></div>
+        <div class="suit-hud__ticks suit-hud__ticks--blue" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="suit-hud__ticks suit-hud__ticks--gold" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="suit-hud__reticle" aria-hidden="true"></div>
+        <div class="suit-hud__center">
+          <p>JIBUN OS</p>
+          <strong>HOME</strong>
+        </div>
+      </div>
+
+      <div class="suit-hud__readout">
+        <p>845 <span>POINTS</span></p>
+        <strong>DAILY VECTOR LOCKED</strong>
+      </div>
+
+      <div class="suit-hud__edge suit-hud__edge--left">
+        <p>SENSOR</p>
+        <div><span>WORK</span><i style="--level: 42%"></i><strong>42</strong></div>
+        <div><span>ENERGY</span><i style="--level: 61%"></i><strong>61</strong></div>
+        <div><span>BUDGET</span><i style="--level: 76%"></i><strong>76</strong></div>
+      </div>
+
+      <div class="suit-hud__edge suit-hud__edge--right">
+        <p>CONTEXT</p>
+        <div><span>RIDE</span><i style="--level: 68%"></i><strong>4</strong></div>
+        <div><span>LUNCH</span><i style="--level: 84%"></i><strong>兆楽</strong></div>
+        <div><span>NEXT</span><i style="--level: 58%"></i><strong>6/22</strong></div>
+      </div>
+
+      <div class="suit-hud__task-panel">
+        <p>GOAL AWARENESS</p>
+        <h3>打刻確認</h3>
+        <div class="suit-hud__task-status">
+          <span>出勤 未確認</span>
+          <span>退勤 未確認</span>
+        </div>
+        <div class="suit-hud__actions">
+          <button type="button">出勤OK</button>
+          <button type="button">退勤OK</button>
+        </div>
+      </div>
+
+      <div class="suit-hud__online">
+        <span>ONLINE</span>
+        <strong>SYSTEM ONLINE</strong>
+      </div>
+
+      <div class="suit-hud__chips">
+        <span><em>TRAIN</em>4回</span>
+        <span><em>LUNCH</em>兆楽</span>
+        <span><em>NEXT</em>ライブ</span>
+        <span><em>AI</em>体力保護</span>
+      </div>
+
+      <div class="suit-hud__nav">
+        <span class="is-active">Home</span>
+        <span>Work</span>
+        <span>Ride</span>
+        <span>Lunch</span>
+        <span>Hobby</span>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-02" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>02</span>
+      <div>
+        <h2>Minimal Device</h2>
+        <p>発表にも載せやすい、洗練された個人用端末。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone minimal-device">
+      <div class="minimal-device__header">
+        <div>
+          <p>JIBUN OS</p>
+          <h3>今日</h3>
+        </div>
+        <span>WED 17</span>
+      </div>
+      <div class="minimal-device__primary">
+        <span class="minimal-device__glyph" aria-hidden="true"></span>
+        <div>
+          <p>打刻チェック</p>
+          <strong>出勤・退勤 未確認</strong>
+        </div>
+      </div>
+      <div class="minimal-device__metrics">
+        <div><span>有料列車</span><strong>4</strong><small>回</small></div>
+        <div><span>ランチ</span><strong>900</strong><small>円</small></div>
+        <div><span>趣味</span><strong>6/22</strong><small>ライブ</small></div>
+      </div>
+      <div class="minimal-device__timeline">
+        <p><span></span>09:30 出勤打刻を確認</p>
+        <p><span></span>12:00 ランチ候補を開く</p>
+        <p><span></span>18:30 退勤打刻を確認</p>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-03" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>03</span>
+      <div>
+        <h2>Transit OS</h2>
+        <p>生活を路線図にする。自分の動線が主役。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone transit-os">
+      <div class="transit-os__mast">
+        <h3>自分OS</h3>
+        <span>PERSONAL LINE</span>
+      </div>
+      <div class="transit-os__map">
+        <div><i></i><strong>朝</strong><span>打刻 未確認</span></div>
+        <div><i></i><strong>昼</strong><span>兆楽 ★★★★</span></div>
+        <div><i></i><strong>夜</strong><span>列車 4回</span></div>
+        <div><i></i><strong>余白</strong><span>6/22 ライブ</span></div>
+      </div>
+      <div class="transit-os__ticket">
+        <p>今月の指定席</p>
+        <strong>4回 / 1,640円</strong>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-04" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>04</span>
+      <div>
+        <h2>Pixel Room</h2>
+        <p>自分の部屋がホーム。生活アプリらしい愛着。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone pixel-room">
+      <div class="pixel-room__wall" aria-hidden="true"></div>
+      <div class="pixel-room__window" aria-hidden="true"><span></span><span></span></div>
+      <div class="pixel-room__desk" aria-hidden="true"></div>
+      <div class="pixel-room__plant" aria-hidden="true"></div>
+      <div class="pixel-room__panel">
+        <p>ROOM OS</p>
+        <h3>ただいま</h3>
+        <strong>今日の生活ログ</strong>
+      </div>
+      <div class="pixel-room__dock">
+        <div><span>WORK</span><strong>未確認</strong></div>
+        <div><span>TRAIN</span><strong>4回</strong></div>
+        <div><span>LUNCH</span><strong>兆楽</strong></div>
+        <div><span>HOBBY</span><strong>ライブ</strong></div>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-05" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>05</span>
+      <div>
+        <h2>Quest Board</h2>
+        <p>日々の確認をクエスト化。遊びを強める案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone quest-board">
+      <div class="quest-board__sky" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="quest-board__plate">
+        <p>DAILY QUEST</p>
+        <h3>自分OS</h3>
+      </div>
+      <div class="quest-board__main">
+        <span></span>
+        <div>
+          <strong>打刻確認</strong>
+          <p>出勤 / 退勤 どちらも未確認</p>
+        </div>
+      </div>
+      <div class="quest-board__meters">
+        <label>体力 <span><i style="width: 62%"></i></span></label>
+        <label>節約 <span><i style="width: 76%"></i></span></label>
+      </div>
+      <div class="quest-board__loot">
+        <div>列車 4回</div><div>兆楽 ★4</div><div>次 ライブ</div>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-06" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>06</span>
+      <div>
+        <h2>Paper Dashboard</h2>
+        <p>紙の情報設計。ドット絵だけど大人っぽい案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone paper-dash">
+      <div class="paper-dash__date">
+        <span>JIBUN OS</span>
+        <strong>06 / 17</strong>
+      </div>
+      <div class="paper-dash__headline">
+        <p>今日の確認</p>
+        <h3>まず打刻</h3>
+      </div>
+      <div class="paper-dash__rows">
+        <p><span>出勤</span><strong>未確認</strong></p>
+        <p><span>退勤</span><strong>未確認</strong></p>
+        <p><span>有料列車</span><strong>4回</strong></p>
+        <p><span>ランチ</span><strong>兆楽</strong></p>
+      </div>
+      <div class="paper-dash__note">
+        <span>AI NOTE</span>
+        <p>疲れている日は、帰りの列車ログを先に出します。</p>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-07" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>07</span>
+      <div>
+        <h2>Luxury Watch OS</h2>
+        <p>高級スマートウォッチの文字盤。小さくても強い案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone watch-os">
+      <div class="watch-os__bezel" aria-hidden="true"></div>
+      <div class="watch-os__face">
+        <p>JIBUN OS</p>
+        <h3>09:42</h3>
+        <span>WED 17</span>
+      </div>
+      <div class="watch-os__orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="watch-os__complications">
+        <div><span>WORK</span><strong>未</strong></div>
+        <div><span>RIDE</span><strong>4</strong></div>
+        <div><span>FOOD</span><strong>兆</strong></div>
+        <div><span>NEXT</span><strong>22</strong></div>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-08" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>08</span>
+      <div>
+        <h2>Flight Deck</h2>
+        <p>航空機計器。朝昼夜を高度計みたいに扱う案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone flight-deck">
+      <div class="flight-deck__horizon" aria-hidden="true"></div>
+      <div class="flight-deck__top">
+        <span>AUTO LIFE</span>
+        <strong>JIBUN OS</strong>
+      </div>
+      <div class="flight-deck__dial">
+        <span></span><span></span><span></span>
+        <strong>今日</strong>
+      </div>
+      <div class="flight-deck__readouts">
+        <p><span>WORK</span><strong>CHECK</strong></p>
+        <p><span>TRAIN</span><strong>4 RIDE</strong></p>
+        <p><span>LUNCH</span><strong>兆楽</strong></p>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-09" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>09</span>
+      <div>
+        <h2>Neon Alley</h2>
+        <p>夜の街のネオン。渋谷ランチや趣味に強い案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone neon-alley">
+      <div class="neon-alley__sign">
+        <p>自分OS</p>
+        <h3>OPEN</h3>
+      </div>
+      <div class="neon-alley__street" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="neon-alley__cards">
+        <div><span>ランチ</span><strong>兆楽 ★4</strong></div>
+        <div><span>列車</span><strong>4回 / 1,640円</strong></div>
+        <div><span>趣味</span><strong>6/22 ライブ</strong></div>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-10" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>10</span>
+      <div>
+        <h2>Command Table</h2>
+        <p>机上の作戦盤。生活を俯瞰する司令室案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone command-table">
+      <div class="command-table__map" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="command-table__header">
+        <p>COMMAND TABLE</p>
+        <h3>今日の作戦</h3>
+      </div>
+      <div class="command-table__pins">
+        <div><strong>朝</strong><span>打刻確認</span></div>
+        <div><strong>昼</strong><span>兆楽</span></div>
+        <div><strong>夜</strong><span>退勤確認</span></div>
+      </div>
+    </div>
+  </article>
+
+  <article id="mock-11" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>11</span>
+      <div>
+        <h2>Glass Stack</h2>
+        <p>透明カードが重なる、今っぽいアプリUI案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone glass-stack">
+      <div class="glass-stack__hero">
+        <p>JIBUN OS</p>
+        <h3>Life Stack</h3>
+      </div>
+      <div class="glass-stack__card glass-stack__card--one"><span>打刻</span><strong>未確認</strong></div>
+      <div class="glass-stack__card glass-stack__card--two"><span>有料列車</span><strong>4回</strong></div>
+      <div class="glass-stack__card glass-stack__card--three"><span>ランチ</span><strong>兆楽</strong></div>
+    </div>
+  </article>
+
+  <article id="mock-12" class="mock-variant concept-card">
+    <header class="concept-label">
+      <span>12</span>
+      <div>
+        <h2>Mono Logbook</h2>
+        <p>白黒SF手帳。硬派で発表にも強い案。</p>
+      </div>
+    </header>
+
+    <div class="concept-phone mono-log">
+      <div class="mono-log__head">
+        <span>JIBUN OS</span>
+        <strong>LOG 06-17</strong>
+      </div>
+      <div class="mono-log__title">
+        <p>DAILY RECORD</p>
+        <h3>生活ログ</h3>
+      </div>
+      <div class="mono-log__list">
+        <p><span>01</span>出勤打刻 未確認</p>
+        <p><span>02</span>有料列車 4回</p>
+        <p><span>03</span>兆楽 ★★★★</p>
+        <p><span>04</span>6/22 ライブ</p>
+      </div>
+    </div>
+  </article>
+</section>

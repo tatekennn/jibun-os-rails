@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  visited_on: 2026-06-17
+  shop_name: MyString
+  area: MyString
+  price: 1
+  rating: 1
+  crowdedness: MyString
+  solo_friendly: false
+  repeat: false
+  memo: MyText
+
+two:
+  visited_on: 2026-06-17
+  shop_name: MyString
+  area: MyString
+  price: 1
+  rating: 1
+  crowdedness: MyString
+  solo_friendly: false
+  repeat: false
+  memo: MyText

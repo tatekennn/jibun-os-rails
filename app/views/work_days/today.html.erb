@@ -1,0 +1,41 @@
+<% content_for :title, "今日の打刻 - 自分OS" %>
+
+<section class="page-head">
+  <p class="eyebrow">WORK CHECK</p>
+  <h1>今日の打刻</h1>
+  <p><%= l(@work_day.date, format: :long) %></p>
+</section>
+
+<section class="pixel-card focus-work">
+  <div class="check-grid">
+    <div class="check-tile">
+      <span class="card-icon card-icon--work" aria-hidden="true"></span>
+      <p>出勤</p>
+      <strong class="<%= @work_day.check_in_confirmed? ? "ok" : "ng" %>"><%= status_chip(@work_day.check_in_confirmed?) %></strong>
+      <% if @work_day.check_in_confirmed_at %>
+        <small><%= l(@work_day.check_in_confirmed_at, format: :short) %></small>
+      <% end %>
+      <%= button_to "出勤打刻した", confirm_check_in_work_days_path, method: :patch, class: "pixel-button pixel-button--green" %>
+    </div>
+
+    <div class="check-tile">
+      <span class="card-icon card-icon--ride" aria-hidden="true"></span>
+      <p>退勤</p>
+      <strong class="<%= @work_day.check_out_confirmed? ? "ok" : "ng" %>"><%= status_chip(@work_day.check_out_confirmed?) %></strong>
+      <% if @work_day.check_out_confirmed_at %>
+        <small><%= l(@work_day.check_out_confirmed_at, format: :short) %></small>
+      <% end %>
+      <%= button_to "退勤打刻した", confirm_check_out_work_days_path, method: :patch, class: "pixel-button pixel-button--blue" %>
+    </div>
+  </div>
+</section>
+
+<section class="pixel-card">
+  <h2>メモ</h2>
+  <%= form_with model: @work_day, class: "pixel-form" do |form| %>
+    <%= form.text_area :memo, rows: 5, placeholder: "今日は9時出勤で調整" %>
+    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
+  <% end %>
+</section>
+
+<%= link_to "履歴を見る", work_days_path, class: "text-link" %>
