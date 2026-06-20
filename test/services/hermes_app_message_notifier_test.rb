@@ -4,6 +4,8 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
   test "builds payload for app-originated ai message" do
     request = ActionDispatch::TestRequest.create
     request.remote_addr = "127.0.0.1"
+    request.set_header("HTTP_USER_AGENT", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1")
+    request.set_header("HTTP_REFERER", "https://jibun-os.onrender.com/ai_chat")
 
     ai_message = AiMessage.create!(body: "退勤チェックして今日のまとめを見たい", mode: "dashboard")
 
@@ -20,10 +22,19 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     assert_equal "退勤チェックして今日のまとめを見たい", payload[:body]
     assert_equal "dashboard", payload[:mode]
     assert_equal "/", payload[:path]
+    assert_equal "https://jibun-os.onrender.com/ai_chat", payload[:referer]
+    assert_includes payload[:user_agent], "iPhone"
+    assert_includes payload[:client_hint], "mobile"
+    assert_includes payload[:client_hint], "pwa_candidate"
+    assert_includes payload[:client_hint], "safari"
     assert_includes payload[:context], "tatekennn/jibun-os-rails"
     assert_includes payload[:context], "Render Web Service jibun-os"
     assert_includes payload[:context], "必ずcallback_urlへJSONでPOST"
-    assert_includes payload[:context], "action_urlへ許可済みoperation"
+    assert_includes payload[:context], "Discordだけに返して終わらない"
+    assert_includes payload[:context], "短文・曖昧な依頼はmodeと本文から意図を補って処理"
+    assert_includes payload[:context], "callback送信時は汎用terminal/python/curl"
+    assert_includes payload[:context], "action_urlへ {\"operation\":\"confirm_check_out\"}"
+    assert_includes payload[:context], "生活データ操作はRailsのaction_url経由"
     assert_equal ai_message.public_id, payload[:message_id]
     assert_includes payload[:callback_url], ai_message.public_id
     assert_includes payload[:callback_url], ai_message.callback_token

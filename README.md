@@ -131,7 +131,7 @@ config/database.yml
 ## AIチャットUIの現状
 
 AIチャットページは、Stimulusで送信中の状態、ユーザー発話、Hermes Agentからのアプリ内返信をチャット風に表示します。
-現在の通常導線では、投稿内容をRailsの`AiMessage`として保存したうえで、`HermesAppMessageNotifier`が署名付きWebhookでHermes Agentへ送ります。送信payloadには、Hermesが最終返信を返すための`callback_url`と、打刻確認・月次支出集計などRails側で安全に実行できる`action_url`を含めます。
+現在の通常導線では、投稿内容をRailsの`AiMessage`として保存したうえで、`HermesAppMessageNotifier`が署名付きWebhookでHermes Agentへ送ります。送信payloadには、Hermesが最終返信を返すための`callback_url`と、打刻確認・月次支出集計などRails側で安全に実行できる`action_url`を含めます。あわせて`mode`、`path`、`referer`、`user_agent`、`client_hint`、標準コンテキストを渡し、スマホ/PWAからの短文依頼でも、どの画面・用途・操作方針の話かをHermes側が補完できるようにしています。
 
 ブラウザ側は`GET /ai_messages/:id.json`をポーリングします。ポーリングはDB状態確認だけなのでAIトークンを消費しません。Hermes Agentが`callback_url`へ`{"reply":"..."}`または`{"error":"..."}`をPOSTすると、Railsが`AiMessage`をcompleted/failedに更新し、次回ポーリングで画面に返信を表示します。
 
