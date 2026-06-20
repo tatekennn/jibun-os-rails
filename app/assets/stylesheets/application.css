@@ -2007,14 +2007,14 @@ body.dashboard .ai-dock__form button {
 }
 
 body.dashboard .bottom-nav {
-  bottom: max(12px, env(safe-area-inset-bottom));
+  bottom: 0;
   gap: 2px;
-  padding: 7px;
+  padding: 7px 7px calc(7px + env(safe-area-inset-bottom));
   border: 1px solid rgba(224, 229, 231, 0.92);
-  border-radius: 28px;
+  border-radius: 28px 28px 0 0;
   background: rgba(255, 255, 255, 0.96);
   box-shadow:
-    0 16px 38px rgba(18, 20, 24, 0.12),
+    0 -8px 30px rgba(18, 20, 24, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(18px) saturate(150%);
 }
@@ -2506,25 +2506,25 @@ body:not(.home_mocks) .ai-dock__form button {
 }
 
 body:not(.home_mocks) .bottom-nav {
-  left: 0;
+  left: 50%;
   right: auto;
   bottom: 0;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 2px;
-  width: 100%;
-  max-width: 460px;
-  margin-right: auto;
-  margin-left: auto;
+  width: min(460px, 100vw);
+  margin: 0;
   padding: 7px 7px calc(7px + env(safe-area-inset-bottom));
   border-radius: 28px 28px 0 0;
   background: rgba(255, 255, 255, 0.96);
   box-shadow:
     0 -8px 30px rgba(18, 20, 24, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
-  transform: none;
+  transform: translate3d(-50%, 0, 0);
+  z-index: 40;
+  box-sizing: border-box;
   backface-visibility: hidden;
-  will-change: auto;
+  will-change: transform;
   contain: layout paint;
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
@@ -2532,13 +2532,13 @@ body:not(.home_mocks) .bottom-nav {
 
 @media (max-width: 899px) {
   body:not(.home_mocks) .bottom-nav {
-    /* mobile-bottom-nav-stable-v2: keep the PWA tab bar pinned to the screen edge */
+    /* mobile-bottom-nav-stable-v3: pin to the screen edge and absorb iOS safe-area inside */
     position: fixed;
     top: auto;
-    right: 0;
+    right: auto;
     bottom: 0;
-    left: 0;
-    transform: none;
+    left: 50%;
+    transform: translate3d(-50%, 0, 0);
   }
 
   body:not(.home_mocks) .bottom-nav__item:active,
@@ -2603,8 +2603,13 @@ body:not(.home_mocks) .bottom-nav__item--active .nav-symbol {
   }
 
   body:not(.home_mocks) .bottom-nav {
+    position: fixed;
+    left: auto;
     right: calc((100vw - 760px) / 2 + 12px);
+    bottom: 104px;
     width: 270px;
+    transform: none;
+    will-change: auto;
   }
 }
 
@@ -7062,8 +7067,9 @@ body.dashboard .pixel-logo {
   }
 
   body.ai_chats .bottom-nav {
-    width: calc(100vw - 20px);
-    right: 10px;
-    left: 10px;
+    right: auto;
+    left: 50%;
+    width: min(460px, 100vw);
+    transform: translate3d(-50%, 0, 0);
   }
 }
