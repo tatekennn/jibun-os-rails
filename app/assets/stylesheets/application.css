@@ -7108,7 +7108,7 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* Dashboard mobile safe-area top v2: keep the home header below iPhone/PWA status icons */
+/* Dashboard mobile safe-area top v3: align home header spacing with other pages */
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
@@ -7116,7 +7116,7 @@ body.dashboard .home-subscbox__summary {
     }
 
     body.dashboard .app-shell {
-      padding-top: 6px;
+      padding-top: 12px;
     }
 
     body.dashboard .top-bar {
@@ -7127,9 +7127,8 @@ body.dashboard .home-subscbox__summary {
 
 @media (max-width: 480px) {
   body.dashboard .top-bar {
-    margin-bottom: 6px;
-    padding-top: 6px;
-    padding-bottom: 10px;
+    margin: 0 0 12px;
+    padding: 10px 0 12px;
   }
 
   body.dashboard .home-subscbox {
