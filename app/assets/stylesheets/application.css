@@ -6516,6 +6516,34 @@ body.ai_chats .chat-room__panel.ai-dock {
   margin-bottom: 12px;
 }
 
+.chat-room__notify-button {
+  margin-left: auto;
+  padding: 8px 10px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.chat-room__notify-button:disabled {
+  opacity: 0.68;
+}
+
+body.ai_chats .ai-dock__header.chat-room__assistant {
+  gap: 10px;
+}
+
+body.ai_chats .ai-dock__header.chat-room__assistant > div {
+  min-width: 0;
+}
+
+body.ai_chats .ai-dock__header.chat-room__assistant small {
+  display: block;
+}
+
 body.ai_chats .chat-room__log {
   min-height: 260px;
   max-height: none;

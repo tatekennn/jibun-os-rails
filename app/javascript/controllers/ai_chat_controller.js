@@ -1,12 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "log", "modeLabel", "statusText", "submitButton", "context"]
+  static targets = ["input", "log", "modeLabel", "statusText", "submitButton", "context", "notificationButton"]
   static values = { defaultMode: String, endpoint: String }
 
   connect() {
     const savedMode = localStorage.getItem("jibun_os_mode") || this.defaultModeValue
     this.applyMode(savedMode, false)
+    this.refreshNotificationButton()
 
     if (this.hasInputTarget) {
       this.submitShortcutHandler = (event) => {
@@ -38,6 +39,33 @@ export default class extends Controller {
     this.inputTarget.value = prompt
     this.inputTarget.focus()
     this.inputTarget.setSelectionRange(this.inputTarget.value.length, this.inputTarget.value.length)
+  }
+
+  async enableNotifications() {
+    if (!this.notificationsSupported()) return
+
+    if (Notification.permission === "granted") {
+      localStorage.setItem("jibun_os_ai_notify", "enabled")
+      this.refreshNotificationButton()
+      this.statusTextTarget.textContent = "返信完了時にブラウザ通知します。"
+      return
+    }
+
+    if (Notification.permission === "denied") {
+      this.statusTextTarget.textContent = "通知がブラウザ側でブロックされています。Safari/設定から許可してください。"
+      this.refreshNotificationButton()
+      return
+    }
+
+    const permission = await Notification.requestPermission()
+    if (permission === "granted") {
+      localStorage.setItem("jibun_os_ai_notify", "enabled")
+      this.statusTextTarget.textContent = "返信完了時にブラウザ通知します。"
+    } else {
+      localStorage.removeItem("jibun_os_ai_notify")
+      this.statusTextTarget.textContent = "通知はOFFのままです。返信はこの画面に表示されます。"
+    }
+    this.refreshNotificationButton()
   }
 
   async send(event) {
@@ -128,6 +156,7 @@ export default class extends Controller {
         const line = this.appendLine("Hermes", payload.assistant_reply || payload.message)
         if (payload.completed) {
           this.statusTextTarget.textContent = "Hermesから返信が届きました。"
+          this.notifyReplyFinished(payload)
         } else if (payload.id) {
           line.dataset.status = "waiting"
           this.statusTextTarget.textContent = "Hermes Agentの返信を待っています。この画面は自動更新します。"
@@ -146,6 +175,55 @@ export default class extends Controller {
     return document.querySelector("meta[name='csrf-token']")?.content || ""
   }
 
+  notificationsSupported() {
+    return "Notification" in window
+  }
+
+  notificationsEnabled() {
+    return this.notificationsSupported() && Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "enabled"
+  }
+
+  refreshNotificationButton() {
+    if (!this.hasNotificationButtonTarget || !this.notificationsSupported()) return
+
+    this.notificationButtonTarget.hidden = false
+
+    if (Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "enabled") {
+      this.notificationButtonTarget.textContent = "完了通知ON"
+      this.notificationButtonTarget.disabled = true
+    } else if (Notification.permission === "denied") {
+      this.notificationButtonTarget.textContent = "通知ブロック中"
+      this.notificationButtonTarget.disabled = true
+    } else {
+      this.notificationButtonTarget.textContent = "完了通知をON"
+      this.notificationButtonTarget.disabled = false
+    }
+  }
+
+  notifyReplyFinished(payload = {}) {
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80])
+    if (!this.notificationsEnabled()) return
+
+    const reply = payload.assistant_reply || payload.message || "返信が届きました。"
+    const body = reply.length > 120 ? `${reply.slice(0, 117)}...` : reply
+
+    try {
+      const notification = new Notification("自分OS: AI返信が届きました", {
+        body,
+        tag: "jibun-os-ai-reply",
+        renotify: true
+      })
+
+      notification.onclick = () => {
+        window.focus()
+        notification.close()
+      }
+    } catch (_error) {
+      localStorage.removeItem("jibun_os_ai_notify")
+      this.refreshNotificationButton()
+    }
+  }
+
   async pollReply(messageId, line, attempt = 0) {
     const maxAttempts = 45
     const delay = attempt < 10 ? 2000 : 5000
@@ -154,6 +232,7 @@ export default class extends Controller {
       delete line.dataset.status
       this.statusTextTarget.textContent = "Hermesからの返信に時間がかかっています。少し待ってから再度確認してください。"
       this.replaceLineText(line, "返信待ちが長引いています。必要なら少し時間を置いて再送してください。")
+      this.notifyReplyFinished({ assistant_reply: "返信待ちが長引いています。" })
       return
     }
 
@@ -175,6 +254,7 @@ export default class extends Controller {
           delete line.dataset.status
           this.statusTextTarget.textContent = "Hermesから返信が届きました。"
           this.replaceLineText(line, payload.assistant_reply || payload.message)
+          this.notifyReplyFinished(payload)
           return
         }
 
