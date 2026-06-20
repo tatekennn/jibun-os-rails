@@ -52,10 +52,11 @@
           <%= yield %>
         </main>
 
-        <% if logged_in? %>
-          <%= render "shared/bottom_nav" %>
-        <% end %>
       </div>
+
+      <% if logged_in? %>
+        <%= render "shared/bottom_nav" %>
+      <% end %>
 
       <% if logged_in? %>
         <%= render "shared/desktop_companion" %>

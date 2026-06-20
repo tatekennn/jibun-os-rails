@@ -7134,3 +7134,19 @@ body.dashboard .home-subscbox__summary {
     padding-bottom: 3px;
   }
 }
+
+/* mobile-bottom-nav-stable-v4: keep the signed-in nav viewport-fixed outside app-shell clipping */
+@media (max-width: 899px) {
+  .app-frame--signed-in > .bottom-nav {
+    position: fixed;
+    top: auto;
+    right: auto;
+    bottom: 0;
+    left: 50%;
+    width: min(460px, 100vw);
+    margin: 0;
+    padding-bottom: calc(7px + env(safe-area-inset-bottom));
+    transform: translate3d(-50%, 0, 0);
+    z-index: 1000;
+  }
+}
