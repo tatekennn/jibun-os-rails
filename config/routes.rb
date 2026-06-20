@@ -20,7 +20,8 @@ Rails.application.routes.draw do
   resources :lunch_logs
   resources :hobby_items
   resources :paid_rides
-  resources :ai_messages, only: :create
+  resources :ai_messages, only: %i[create show]
+  post "/webhooks/hermes_replies/:id", to: "hermes_replies#create", as: :hermes_reply_webhook
 
   get "/offline", to: "pwa#offline"
 

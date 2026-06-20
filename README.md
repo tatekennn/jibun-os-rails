@@ -51,7 +51,7 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 - 有料列車ログ: 月次回数、合計金額、理由、疲労度
 - 渋谷ランチログ: 価格、満足度、混雑度、一人利用、再訪フラグ、絞り込み
 - 趣味コーナー: 予定とメモをカテゴリ付きで保存
-- AIチャットページ: repo/Render/push方針など最低限の開発前提を添えて、DiscordとHermesへ作業依頼を送る画面
+- AIチャットページ: repo/Render/push方針など最低限の開発前提を添えて、DiscordとHermesへ作業依頼を送る画面。Hermesからの結果はRails側に一時保存し、画面はHTTPポーリングで表示する
 - PWA: manifest、service worker、offlineページ
 
 ## 主要ルート
@@ -87,7 +87,13 @@ app/views/ai_chats/show.html.erb
   AIチャットページ。repo、Render、push方針などの前提を添えてHermesへ依頼を送る。
 
 app/javascript/controllers/ai_chat_controller.js
-  AIチャット風UIのモード切り替え。現時点では本物のAI API連携なし。
+  AIチャット風UIのモード切り替え、送信、返信ポーリングを担当。送信後はRailsの`AiMessage`状態を確認するだけなので、ポーリング自体ではAIトークンを消費しない。
+
+app/models/ai_message.rb
+  アプリ内AIチャットの一時メッセージ。Hermesからのcallback結果を保存する。
+
+app/controllers/hermes_replies_controller.rb
+  Hermesからの最終返信を受け取り、`AiMessage`をcompleted/failedへ更新するWebhook endpoint。
 
 app/views/shared/_bottom_nav.html.erb
   下部ナビ/PCサイドナビ。
@@ -115,6 +121,7 @@ config/database.yml
 
 AIチャットページは、Stimulusで送信中の状態、ユーザー発話、アプリ内返信をチャット風に表示します。
 環境変数が設定されていれば投稿内容をDiscord WebhookとHermes Webhookへ送ります。
+送信時に`AiMessage`を作成し、Hermesへ一時callback URLを渡します。Hermesが処理を終えてcallbackへ`reply`をPOSTすると、Railsがその結果を保存し、画面は短時間のHTTPポーリングで返信バブルを更新します。このポーリングはRailsのDB状態を見るだけなので、追加のAIトークンは消費しません。
 
 `/ai_chat` は、repo、Render、push方針、README確認、秘密情報をGitHubへ入れないことなどの前提をhidden contextとしてHermesへ同梱します。アプリ内チャットでは特定の人格設定や`soul.md`は前提にしません。
 

@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_17_144558) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_20_111500) do
+  create_table "ai_messages", force: :cascade do |t|
+    t.string "public_id", null: false
+    t.string "callback_token", null: false
+    t.text "body", null: false
+    t.string "mode", default: "dashboard", null: false
+    t.text "context"
+    t.string "status", default: "pending", null: false
+    t.text "assistant_reply"
+    t.text "delivery_message"
+    t.text "error_message"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_ai_messages_on_created_at"
+    t.index ["public_id"], name: "index_ai_messages_on_public_id", unique: true
+    t.index ["status"], name: "index_ai_messages_on_status"
+  end
+
   create_table "hobby_items", force: :cascade do |t|
     t.string "title", null: false
     t.string "category"

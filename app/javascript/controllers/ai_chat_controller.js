@@ -109,7 +109,8 @@ export default class extends Controller {
       this.hideThinking()
 
       if (response.ok && payload.ok) {
-        this.appendLine("AI", payload.assistant_reply || payload.message)
+        const line = this.appendLine("AI", payload.assistant_reply || payload.message)
+        if (payload.id && !payload.completed) this.pollReply(payload.id, line)
       } else {
         this.appendLine("AI", payload.message || "送信に失敗しました。")
       }
@@ -121,6 +122,54 @@ export default class extends Controller {
 
   csrfToken() {
     return document.querySelector("meta[name='csrf-token']")?.content || ""
+  }
+
+  async pollReply(messageId, line, attempt = 0) {
+    const maxAttempts = 45
+    const delay = attempt < 10 ? 2000 : 5000
+
+    if (attempt >= maxAttempts) {
+      this.replaceLineText(line, "時間がかかっています。この画面を開き直して、必要ならもう一度送ってください。")
+      return
+    }
+
+    window.setTimeout(async () => {
+      try {
+        const response = await fetch(this.messageUrl(messageId), {
+          headers: { "Accept": "application/json" }
+        })
+        const payload = await response.json()
+
+        if (!response.ok || !payload.ok) {
+          this.replaceLineText(line, payload.message || "返信の確認に失敗しました。")
+          return
+        }
+
+        if (payload.completed) {
+          this.replaceLineText(line, payload.assistant_reply || payload.message)
+          return
+        }
+
+        this.pollReply(messageId, line, attempt + 1)
+      } catch (_error) {
+        this.pollReply(messageId, line, attempt + 1)
+      }
+    }, delay)
+  }
+
+  messageUrl(messageId) {
+    const base = this.endpointValue.replace(/\.json$/, "")
+    return `${base}/${encodeURIComponent(messageId)}.json`
+  }
+
+  replaceLineText(line, text) {
+    if (!line) return
+
+    const badge = line.querySelector("span")
+    line.textContent = ""
+    if (badge) line.appendChild(badge)
+    line.append(` ${text}`)
+    this.logTarget.scrollTop = this.logTarget.scrollHeight
   }
 
   showThinking() {
@@ -150,5 +199,6 @@ export default class extends Controller {
     line.append(` ${text}`)
     this.logTarget.appendChild(line)
     this.logTarget.scrollTop = this.logTarget.scrollHeight
+    return line
   }
 }

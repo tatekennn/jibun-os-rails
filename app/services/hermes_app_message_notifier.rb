@@ -8,10 +8,10 @@ class HermesAppMessageNotifier
   class DeliveryError < StandardError; end
 
   class << self
-    def call(body:, mode:, request:, context: nil)
+    def call(body:, mode:, request:, context: nil, ai_message: nil)
       return :skipped if webhook_url.blank?
 
-      json_body = build_payload(body: body, mode: mode, request: request, context: context).to_json
+      json_body = build_payload(body: body, mode: mode, request: request, context: context, ai_message: ai_message).to_json
       response = Net::HTTP.post(
         webhook_uri,
         json_body,
@@ -25,7 +25,7 @@ class HermesAppMessageNotifier
       raise DeliveryError, error.message
     end
 
-    def build_payload(body:, mode:, request:, context: nil)
+    def build_payload(body:, mode:, request:, context: nil, ai_message: nil)
       {
         event_type: "jibun_os.ai_message",
         app: "jibun-os-rails",
@@ -35,8 +35,10 @@ class HermesAppMessageNotifier
         mode: mode.presence || "dashboard",
         path: request&.path || "unknown",
         ip: request&.remote_ip || "unknown",
+        message_id: ai_message&.public_id,
+        callback_url: callback_url_for(request: request, ai_message: ai_message),
         sent_at: Time.current.iso8601
-      }
+      }.compact
     end
 
     def default_context
@@ -45,7 +47,19 @@ class HermesAppMessageNotifier
         本命はRails版で、mainへpushするとRender Web Service jibun-osへ自動デプロイされます。
         作業時はREADME.md、git status、関連ファイルを確認し、必要なら検索・コード変更・テスト・commit・pushまで進めます。
         config/master.keyなどの秘密情報は絶対にGitHubへ入れません。
+        アプリ内チャットでは特定の人格設定やsoul.mdは前提にしません。
       CONTEXT
+    end
+
+    def callback_url_for(request:, ai_message:)
+      return if request.blank? || ai_message.blank?
+
+      Rails.application.routes.url_helpers.hermes_reply_webhook_url(
+        ai_message.public_id,
+        token: ai_message.callback_token,
+        host: request.host,
+        protocol: request.protocol
+      )
     end
 
     def headers_for(json_body)

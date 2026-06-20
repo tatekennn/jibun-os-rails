@@ -11,21 +11,39 @@ class AiMessagesController < ApplicationController
       return
     end
 
-    ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request)
-    hermes_result = ::HermesAppMessageNotifier.call(body: body, mode: mode, request: request, context: context)
-    destination = hermes_result == :skipped ? "Discord" : "DiscordとHermes"
+    ai_message = AiMessage.create!(body: body, mode: mode, context: context)
 
-    render json: {
-      ok: true,
-      message: "#{destination}へ送信しました。",
-      assistant_reply: assistant_reply_for(body: body, mode: mode, hermes_result: hermes_result)
-    }
+    ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request)
+    hermes_result = ::HermesAppMessageNotifier.call(
+      body: body,
+      mode: mode,
+      request: request,
+      context: context,
+      ai_message: ai_message
+    )
+
+    if hermes_result == :skipped
+      ai_message.complete!(reply: "Hermes連携URLが未設定のため、アプリ内返信はここで止めています。")
+      ai_message.update!(delivery_message: "Discordへ送信しました。")
+    else
+      ai_message.mark_delivered!(message: "DiscordとHermesへ送信しました。")
+    end
+
+    render json: serialize_message(ai_message, initial: true)
   rescue ::DiscordAppMessageNotifier::DeliveryError => error
     Rails.logger.warn("Discord app message delivery failed: #{error.message}")
+    ai_message&.fail!(message: "Discordへの送信に失敗しました。")
     render json: { ok: false, message: "Discordへの送信に失敗しました。少し時間を置いて再送してください。" }, status: :bad_gateway
   rescue ::HermesAppMessageNotifier::DeliveryError => error
     Rails.logger.warn("Hermes app message delivery failed: #{error.message}")
+    ai_message&.fail!(message: "Hermesへの送信に失敗しました。")
     render json: { ok: false, message: "Hermesへの送信に失敗しました。少し時間を置いて再送してください。" }, status: :bad_gateway
+  end
+
+  def show
+    ai_message = AiMessage.find_by!(public_id: params[:id])
+
+    render json: serialize_message(ai_message)
   end
 
   private
@@ -34,24 +52,24 @@ class AiMessagesController < ApplicationController
     params.fetch(:message, {}).permit(:body, :mode, :context)
   end
 
-  def assistant_reply_for(body:, mode:, hermes_result:)
-    prefix = case mode
-    when "rest"
-      "疲れ気味として受け取りました。"
-    when "budget"
-      "節約まわりの相談として受け取りました。"
-    when "lunch"
-      "ランチまわりの相談として受け取りました。"
-    when "hobby"
-      "趣味まわりの相談として受け取りました。"
-    else
-      "内容を受け取りました。"
-    end
+  def serialize_message(ai_message, initial: false)
+    {
+      ok: true,
+      id: ai_message.public_id,
+      status: ai_message.status,
+      message: ai_message.delivery_message.presence || "送信しました。",
+      assistant_reply: ai_message.assistant_reply.presence || pending_reply_for(ai_message, initial: initial),
+      completed: ai_message.finished?
+    }
+  end
 
-    if hermes_result == :skipped
-      "#{prefix} いまはアプリ内の返信だけ表示しています。外部連携を有効にすると、この内容を作業依頼として送れます。"
+  def pending_reply_for(ai_message, initial: false)
+    return ai_message.error_message if ai_message.status == "failed"
+
+    if initial
+      "受け取りました。実行結果が戻るまで、この画面で待機します。"
     else
-      "#{prefix} 依頼は送信済みです。必要な確認や作業がある場合は、この内容をもとに進めます。"
+      "まだ処理中です。もう少し待っています。"
     end
   end
 end

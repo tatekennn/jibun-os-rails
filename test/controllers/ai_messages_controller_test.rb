@@ -17,8 +17,9 @@ class AiMessagesControllerTest < ActionDispatch::IntegrationTest
     DiscordAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:|
       discord_delivered << { body: body, mode: mode, request: request }
     end
-    HermesAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:, context: nil|
-      hermes_delivered << { body: body, mode: mode, request: request, context: context }
+    HermesAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:, context: nil, ai_message: nil|
+      hermes_delivered << { body: body, mode: mode, request: request, context: context, ai_message: ai_message }
+      :delivered
     end
 
     post ai_messages_url(format: :json), params: { message: { body: "ランチ入力をもっと楽にしたい", mode: "lunch" } }
@@ -26,17 +27,37 @@ class AiMessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal true, payload["ok"]
+    assert payload["id"].present?
+    assert_equal "delivered", payload["status"]
+    assert_equal false, payload["completed"]
     assert_equal "DiscordとHermesへ送信しました。", payload["message"]
-    assert_match "ランチまわりの相談として受け取りました", payload["assistant_reply"]
+    assert_match "実行結果が戻るまで", payload["assistant_reply"]
     assert_equal 1, discord_delivered.size
     assert_equal "ランチ入力をもっと楽にしたい", discord_delivered.first[:body]
     assert_equal "lunch", discord_delivered.first[:mode]
     assert_equal 1, hermes_delivered.size
     assert_equal "ランチ入力をもっと楽にしたい", hermes_delivered.first[:body]
     assert_equal "lunch", hermes_delivered.first[:mode]
+    assert_kind_of AiMessage, hermes_delivered.first[:ai_message]
   ensure
     DiscordAppMessageNotifier.define_singleton_method(:call, original_discord_call) if original_discord_call
     HermesAppMessageNotifier.define_singleton_method(:call, original_hermes_call) if original_hermes_call
+  end
+
+  test "shows stored assistant reply for polling" do
+    sign_in_as_owner
+    ai_message = AiMessage.create!(body: "今日の有料列車を見たい", mode: "budget")
+    ai_message.complete!(reply: "今月の有料列車ログを確認しました。")
+
+    get ai_message_url(ai_message.public_id, format: :json)
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    assert_equal true, payload["ok"]
+    assert_equal ai_message.public_id, payload["id"]
+    assert_equal "completed", payload["status"]
+    assert_equal true, payload["completed"]
+    assert_equal "今月の有料列車ログを確認しました。", payload["assistant_reply"]
   end
 
   test "blank message is rejected" do

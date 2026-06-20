@@ -5,10 +5,13 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     request = ActionDispatch::TestRequest.create
     request.remote_addr = "127.0.0.1"
 
+    ai_message = AiMessage.create!(body: "退勤チェックして今日のまとめを見たい", mode: "dashboard")
+
     payload = HermesAppMessageNotifier.build_payload(
       body: "退勤チェックして今日のまとめを見たい",
       mode: "dashboard",
-      request: request
+      request: request,
+      ai_message: ai_message
     )
 
     assert_equal "jibun_os.ai_message", payload[:event_type]
@@ -19,6 +22,9 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     assert_equal "/", payload[:path]
     assert_includes payload[:context], "tatekennn/jibun-os-rails"
     assert_includes payload[:context], "Render Web Service jibun-os"
+    assert_equal ai_message.public_id, payload[:message_id]
+    assert_includes payload[:callback_url], ai_message.public_id
+    assert_includes payload[:callback_url], ai_message.callback_token
     assert payload[:sent_at].present?
   end
 
