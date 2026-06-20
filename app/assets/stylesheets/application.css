@@ -7116,7 +7116,7 @@ body.dashboard .home-subscbox__summary {
     }
 
     body.dashboard .app-shell {
-      padding-top: 8px;
+      padding-top: 6px;
     }
 
     body.dashboard .top-bar {
@@ -7127,8 +7127,8 @@ body.dashboard .home-subscbox__summary {
 
 @media (max-width: 480px) {
   body.dashboard .top-bar {
-    margin-bottom: 8px;
-    padding-top: 8px;
+    margin-bottom: 6px;
+    padding-top: 6px;
     padding-bottom: 10px;
   }
 
