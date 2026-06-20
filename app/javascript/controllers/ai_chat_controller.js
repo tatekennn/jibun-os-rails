@@ -213,7 +213,7 @@ export default class extends Controller {
     const badge = document.createElement("span")
     badge.textContent = "Hermes"
     line.appendChild(badge)
-    line.append(" 考えています…")
+    line.append(" 考えています")
     this.logTarget.appendChild(line)
     this.logTarget.scrollTop = this.logTarget.scrollHeight
   }

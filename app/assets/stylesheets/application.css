@@ -6824,8 +6824,16 @@ body.dashboard .pixel-logo {
 .ai-dock__message--thinking::after {
   content: "…";
   display: inline-block;
+  grid-column: 2;
+  justify-self: start;
+  align-self: baseline;
   width: 1.1em;
-  margin-left: 0.2em;
+  height: auto;
+  margin: 0 0 0 0.2em;
+  border-radius: 0;
+  background: none;
+  color: #68737d;
+  line-height: 1;
   animation: jibunPulse 1.15s ease-in-out infinite;
   vertical-align: baseline;
 }
