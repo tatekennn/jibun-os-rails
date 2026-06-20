@@ -7108,7 +7108,7 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* Dashboard mobile safe-area top v6: keep the header in the same visual slot as work/train pages */
+/* Dashboard mobile safe-area top v7: keep dashboard safe-area in the shell and align the home masthead with page headers */
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
@@ -7116,6 +7116,7 @@ body.dashboard .home-subscbox__summary {
     }
 
     body.dashboard .app-shell {
+      overflow: visible;
       min-height: 100dvh;
       padding-top: calc(10px + env(safe-area-inset-top));
     }
@@ -7132,6 +7133,26 @@ body.dashboard .home-subscbox__summary {
   body.dashboard .home-subscbox {
     gap: 11px;
     padding-top: 0;
+  }
+
+  body.dashboard .home-subscbox__masthead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 12px;
+    padding: 16px 2px 6px;
+  }
+
+  body.dashboard .home-subscbox__masthead h1 {
+    font-size: 32px;
+    line-height: 1.08;
+  }
+
+  body.dashboard .home-subscbox__masthead time {
+    align-self: end;
+    min-width: 0;
+    padding: 7px 10px;
+    white-space: nowrap;
   }
 
   body.dashboard .home-subscbox__summary {
