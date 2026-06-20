@@ -19,7 +19,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="<%= params[:controller].tr("/", "_") %>" <%= tag.attributes(data: logged_in? && params[:controller] == "ai_chats" ? { controller: "ai-chat", ai_chat_default_mode_value: "dashboard", ai_chat_endpoint_value: ai_messages_path(format: :json) } : {}) %>>
+  <body class="<%= params[:controller].tr("/", "_") %>">
     <div class="app-frame <%= "app-frame--signed-in" if logged_in? %>">
       <div class="app-shell">
         <header class="top-bar">

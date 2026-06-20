@@ -50,7 +50,7 @@ export default class extends Controller {
     this.appendLine("YOU", text)
     this.inputTarget.value = ""
     this.applyMode(mode, false)
-    await this.forwardToDiscordThread(text, mode)
+    await this.sendToHermes(text, mode)
   }
 
   applyMode(mode, announce = true) {
@@ -106,7 +106,7 @@ export default class extends Controller {
     }[mode] || "了解です。全体を整えます。"
   }
 
-  async forwardToDiscordThread(text, mode) {
+  async sendToHermes(text, mode) {
     if (!this.hasEndpointValue) return
 
     try {
@@ -125,20 +125,20 @@ export default class extends Controller {
       this.hideThinking()
 
       if (response.ok && payload.ok) {
-        const line = this.appendLine("AI", payload.assistant_reply || payload.message)
+        const line = this.appendLine("Hermes", payload.assistant_reply || payload.message)
         if (payload.completed) {
-          this.statusTextTarget.textContent = "Discordスレッドへ送りました。"
+          this.statusTextTarget.textContent = "Hermesから返信が届きました。"
         } else if (payload.id) {
           line.dataset.status = "waiting"
-          this.statusTextTarget.textContent = "Discordスレッドへの送信結果を待っています。この画面は自動更新します。"
+          this.statusTextTarget.textContent = "Hermes Agentの返信を待っています。この画面は自動更新します。"
           this.pollReply(payload.id, line)
         }
       } else {
-        this.appendLine("AI", payload.message || "送信に失敗しました。")
+        this.appendLine("Hermes", payload.message || "送信に失敗しました。")
       }
     } catch (_error) {
       this.hideThinking()
-      this.appendLine("AI", "送信に失敗しました。通信状態を確認してください。")
+      this.appendLine("Hermes", "送信に失敗しました。通信状態を確認してください。")
     }
   }
 
@@ -152,8 +152,8 @@ export default class extends Controller {
 
     if (attempt >= maxAttempts) {
       delete line.dataset.status
-      this.statusTextTarget.textContent = "送信確認が長引いています。Discordスレッド側を確認してください。"
-      this.replaceLineText(line, "返信待ちが長引いています。Discordには届いている可能性があります。必要なら少し時間を置いて再送してください。")
+      this.statusTextTarget.textContent = "Hermesからの返信に時間がかかっています。少し待ってから再度確認してください。"
+      this.replaceLineText(line, "返信待ちが長引いています。必要なら少し時間を置いて再送してください。")
       return
     }
 
@@ -173,13 +173,13 @@ export default class extends Controller {
 
         if (payload.completed) {
           delete line.dataset.status
-          this.statusTextTarget.textContent = "Discordスレッドへ送りました。"
+          this.statusTextTarget.textContent = "Hermesから返信が届きました。"
           this.replaceLineText(line, payload.assistant_reply || payload.message)
           return
         }
 
         if (attempt === 8) {
-          this.replaceLineText(line, "まだ送信処理中です。Discordスレッド側に届いているかも確認してください。")
+          this.replaceLineText(line, "Hermesがまだ考えています。返信が届くまでこの画面で待機します。")
           line.dataset.status = "waiting"
         }
 
@@ -211,7 +211,7 @@ export default class extends Controller {
     line.className = "ai-dock__message ai-dock__message--thinking"
     line.dataset.thinking = "true"
     const badge = document.createElement("span")
-    badge.textContent = "AI"
+    badge.textContent = "Hermes"
     line.appendChild(badge)
     line.append(" 考えています…")
     this.logTarget.appendChild(line)

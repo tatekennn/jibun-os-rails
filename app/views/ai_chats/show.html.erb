@@ -4,7 +4,7 @@
   <div>
     <p class="eyebrow">CHAT</p>
     <h1>AIチャット</h1>
-    <p>自然文で記録確認やアプリ改善を依頼できます。投稿はDiscordスレッドへ送り、続きはDiscord側で返します。</p>
+    <p>自然文で記録確認やアプリ改善を依頼できます。Hermes Agentが処理し、返信はこの画面に表示されます。</p>
   </div>
   <%= link_to "ホーム", root_path, class: "ghost-button" %>
 </section>
@@ -30,14 +30,14 @@
     <div class="ai-dock__header chat-room__assistant">
       <span class="pixel-face" aria-hidden="true"></span>
       <div>
-        <p>AIチャット</p>
+        <p>Hermesチャット</p>
         <strong data-ai-chat-target="modeLabel">待機中</strong>
-        <small data-ai-chat-target="statusText">送信すると、Discordスレッドへ投稿してアプリ側は送信済みにします。</small>
+        <small data-ai-chat-target="statusText">送信すると、Hermes Agentが考えてこの画面に返信します。</small>
       </div>
     </div>
 
     <div class="ai-dock__log chat-room__log" data-ai-chat-target="log" aria-live="polite">
-      <p class="ai-dock__message ai-dock__message--os"><span>AI</span> 依頼を送ると、このDiscordスレッドへ転送します。アプリ側は送信済みとして完了します。</p>
+      <p class="ai-dock__message ai-dock__message--os"><span>Hermes</span> 依頼を送ると、Hermes Agentが処理してこの画面に返信します。</p>
     </div>
 
     <div class="ai-dock__chips chat-room__chips" aria-label="依頼テンプレート">

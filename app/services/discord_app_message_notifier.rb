@@ -26,9 +26,9 @@ class DiscordAppMessageNotifier
 
     def build_content(body:, mode:, request:, context: nil)
       content = <<~MESSAGE.strip
-        📨 **自分OSアプリ経由のAIチャット投稿**
-        このDiscordスレッドに届いた文章は、アプリ内AIチャットから送られた通常投稿です。
-        以降はこのスレッドでそのまま返答します。
+        📨 **自分OSアプリ経由のAIチャット投稿ログ**
+        このDiscord投稿は任意の人間向け通知ログです。
+        アプリ内返信の主経路はHermes Webhook + Rails callbackです。
 
         ```
         #{body.to_s.strip}

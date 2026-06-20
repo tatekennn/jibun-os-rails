@@ -10,7 +10,7 @@ class HermesActionsController < ApplicationController
       return
     end
 
-    case params[:action].to_s
+    case requested_operation
     when "confirm_check_in"
       work_day = WorkDay.today
       already_confirmed = work_day.check_in_confirmed?
@@ -34,11 +34,15 @@ class HermesActionsController < ApplicationController
     when "monthly_spending_summary"
       render json: monthly_spending_summary
     else
-      render json: { ok: false, message: "unsupported action" }, status: :unprocessable_entity
+      render json: { ok: false, message: "unsupported operation" }, status: :unprocessable_entity
     end
   end
 
   private
+
+  def requested_operation
+    params[:operation].to_s
+  end
 
   def valid_action_token?(ai_message)
     token = params[:token].to_s

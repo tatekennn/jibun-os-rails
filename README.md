@@ -51,7 +51,7 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 - 有料列車ログ: 月次回数、合計金額、理由、疲労度
 - 渋谷ランチログ: 価格、満足度、混雑度、一人利用、再訪フラグ、絞り込み
 - 趣味コーナー: 予定とメモをカテゴリ付きで保存
-- AIチャットページ: アプリ内の自然文投稿をDiscordスレッドへ送り、アプリ側では送信済みとして表示する画面
+- AIチャットページ: アプリ内の自然文投稿をHermes Agentへ送り、callback経由で返信をアプリ内に表示する画面
 - PWA: manifest、service worker、offlineページ
 
 ## 主要ルート
@@ -67,6 +67,11 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 /hobby_items              趣味予定・メモ
 /hobby_items/new          趣味記録フォーム
 /ai_chat                  AIチャットページ
+/ai_messages              アプリ内AIチャット投稿/状態確認(JSON)
+/webhooks/hermes_replies/:id
+                          Hermes Agentからの最終返信callback
+/webhooks/hermes_actions/:id
+                          Hermes Agentが呼べるRails管理の安全なアクションendpoint
 /home_mocks               以前作ったホームデザインモック
 /manifest                 PWA manifest
 /service-worker           Service Worker
@@ -84,16 +89,22 @@ app/assets/stylesheets/application.css
   ほぼ全体のデザイン。スマホ/PCレスポンシブもここ。
 
 app/views/ai_chats/show.html.erb
-  AIチャットページ。投稿内容をDiscordスレッドへ送り、アプリ側では送信済みとして扱う。
+  AIチャットページ。投稿内容をHermes Agentへ送り、返信をアプリ内に表示する。
 
 app/javascript/controllers/ai_chat_controller.js
   AIチャット風UIのモード切り替え、送信、返信ポーリングを担当。送信後はRailsの`AiMessage`状態を確認するだけなので、ポーリング自体ではAIトークンを消費しない。
 
 app/models/ai_message.rb
-  アプリ内AIチャットの一時メッセージ。現在はDiscord handoff結果を保存する。
+  アプリ内AIチャットの一時メッセージ。Hermesへの送信状態、callback token、最終返信を保存する。
 
 app/controllers/hermes_replies_controller.rb
-  Hermesからの最終返信を受け取り、`AiMessage`をcompleted/failedへ更新するWebhook endpoint。現在の通常導線では使わない将来用endpoint。
+  Hermesからの最終返信を受け取り、`AiMessage`をcompleted/failedへ更新するWebhook endpoint。
+
+app/services/hermes_app_message_notifier.rb
+  アプリ内投稿を署名付きでHermes Webhookへ送る。payloadには`callback_url`と`action_url`を含める。
+
+app/controllers/hermes_actions_controller.rb
+  Hermesが使えるRails所有の安全なアクションendpoint。任意実行ではなく、許可済みoperationだけを受ける。
 
 app/views/shared/_bottom_nav.html.erb
   下部ナビ/PCサイドナビ。
@@ -119,12 +130,12 @@ config/database.yml
 
 ## AIチャットUIの現状
 
-AIチャットページは、Stimulusで送信中の状態、ユーザー発話、アプリ内返信をチャット風に表示します。
-現在の通常導線では、投稿内容をDiscord Webhookで指定スレッドへ送り、Rails側の`AiMessage`は即completedにします。アプリ画面には「Discordスレッドへ送信済み」と表示し、その後の実際の返答・作業はDiscordスレッド側で続けます。
+AIチャットページは、Stimulusで送信中の状態、ユーザー発話、Hermes Agentからのアプリ内返信をチャット風に表示します。
+現在の通常導線では、投稿内容をRailsの`AiMessage`として保存したうえで、`HermesAppMessageNotifier`が署名付きWebhookでHermes Agentへ送ります。送信payloadには、Hermesが最終返信を返すための`callback_url`と、打刻確認・月次支出集計などRails側で安全に実行できる`action_url`を含めます。
 
-以前は投稿内容をHermes Webhookへ直接送り、Hermesがcallback URLへ`reply`をPOSTする構成を試しました。しかしDiscord Gatewayの危険コマンド承認に引っかかるとアプリ内返信が戻らないため、現時点ではこの直接callback導線は通常運用から外しています。
+ブラウザ側は`GET /ai_messages/:id.json`をポーリングします。ポーリングはDB状態確認だけなのでAIトークンを消費しません。Hermes Agentが`callback_url`へ`{"reply":"..."}`または`{"error":"..."}`をPOSTすると、Railsが`AiMessage`をcompleted/failedに更新し、次回ポーリングで画面に返信を表示します。
 
-`HermesAppMessageNotifier`、`HermesRepliesController`、`HermesActionsController`は将来、安定したAI連携を再設計する時のために残しています。ただし、現行のユーザー入力はRails側で即時実データ操作せず、Discordスレッドへ渡すだけです。
+Discord Webhookは、必要なら人間向け通知ログとして別途使えます。ただし、アプリ内AIチャットの主経路はDiscord経由の返信ではなく、Hermes Webhook + Rails callbackです。
 
 現在の判定例:
 
@@ -181,16 +192,20 @@ Renderへpushする前には最低限これを通してください。
 RAILS_MASTER_KEY
 JIBUN_OS_LOGIN_EMAIL
 JIBUN_OS_LOGIN_PASSWORD
+HERMES_APP_MESSAGE_WEBHOOK_URL
+HERMES_APP_MESSAGE_WEBHOOK_SECRET
+# 任意: Discordへ人間向け通知ログも残す場合だけ
 DISCORD_APP_MESSAGE_WEBHOOK_URL
 DISCORD_APP_MESSAGE_THREAD_ID
 ```
 
 `DATABASE_URL`は`render.yaml`で`jibun-os-db`から自動参照します。
 
-`DISCORD_APP_MESSAGE_*` は、アプリ内AIチャットの内容をDiscordスレッドへ通知するための設定です。
-`DISCORD_APP_MESSAGE_THREAD_ID` を入れると、Webhook投稿は指定スレッドへ届きます。
+`HERMES_APP_MESSAGE_WEBHOOK_URL` / `HERMES_APP_MESSAGE_WEBHOOK_SECRET` は、アプリ内AIチャットをHermes Agentへ送るための設定です。Hermes側のWebhook subscription route URLと、そのroute secretをRenderへ設定します。secretは生のroute secretを入れ、`sha256=`や引用符は付けません。
 
-過去に使っていた `HERMES_APP_MESSAGE_WEBHOOK_URL` / `HERMES_APP_MESSAGE_WEBHOOK_SECRET` は、現在の通常導線では不要です。将来、Hermesへの直接callback方式を安全に再設計する場合にだけ再利用します。
+Hermes側のsubscription promptでは、payload内の`callback_url`へ最終返信をPOSTすることを明示します。成功時は`{"reply":"..."}`、失敗時は`{"error":"..."}`を送ります。打刻や支出集計などRails内データを扱う場合は、payload内の`action_url`へ`{"operation":"confirm_check_out"}`のように許可済みoperationだけをPOSTし、その結果を`callback_url`へ要約します。
+
+`DISCORD_APP_MESSAGE_*` は任意です。アプリ内返信の主経路ではなく、人間向け通知ログを残したい場合だけ使います。
 
 Renderの構成:
 
@@ -226,18 +241,17 @@ bin/rails server -b 0.0.0.0 -p $PORT
 優先度順:
 
 1. Render上の実画面をスマホで確認して、UI崩れを直す
-2. 入力・編集・削除の操作感を磨く
-3. 初期データや空状態を自然にする
-4. AIチャットUIをもう少し本物っぽい対話表示にする
-5. 実AI連携の設計を決める
+2. Render環境変数にHermes Webhook URL/secretを設定し、実際にアプリ内返信が戻ることを確認する
+3. 入力・編集・削除の操作感を磨く
+4. 初期データや空状態を自然にする
+5. AIチャットから使える安全な`action_url` operationを必要最小限で増やす
 6. 30日後も使うならDBをRender有料かNeonへ移す
-7. 認証が必要か判断する
-8. 通知/Web Pushを検討する
+7. 通知/Web Pushを検討する
 
 ## 注意点
 
 - `config/master.key`はGitHubに入れないこと。
 - Render Free Postgresは30日制限があります。
 - Render Free Web Serviceはスリープします。
-- 現在のAIチャット導線はDiscordスレッドへのhandoffです。Hermesへの直接callback連携は、承認待ちで詰まらない設計に直すまで通常運用から外しています。
+- 現在のAIチャット導線はHermes AgentへのWebhook送信とRails callbackによるアプリ内返信です。`callback_url`と`action_url`はtoken付きで、`action_url`はRails側の許可済みoperationだけを実行します。
 - VercelにあるNext.js版は過去の表示確認用プロトタイプです。今後の本体はこのRails版です。

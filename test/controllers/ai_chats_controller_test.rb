@@ -18,6 +18,6 @@ class AiChatsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-ai-chat-endpoint-value='#{ai_messages_path(format: :json)}']"
     assert_select "textarea[aria-label='AIチャット入力']"
     assert_select "form[data-action='submit->ai-chat#send']"
-    assert_select "p", text: /Discordスレッド/
+    assert_select "p", text: /Hermes Agentが処理/
   end
 end

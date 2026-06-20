@@ -7,7 +7,7 @@ class HermesActionsControllerTest < ActionDispatch::IntegrationTest
     today.update!(check_out_confirmed: false, check_out_confirmed_at: nil)
 
     post hermes_action_webhook_url(ai_message.public_id, token: ai_message.callback_token, format: :json),
-      params: { action: "confirm_check_out" }
+      params: { operation: "confirm_check_out" }
 
     assert_response :success
     payload = JSON.parse(response.body)
@@ -21,7 +21,7 @@ class HermesActionsControllerTest < ActionDispatch::IntegrationTest
     ai_message = AiMessage.create!(body: "今日の退勤して", mode: "dashboard")
 
     post hermes_action_webhook_url(ai_message.public_id, token: "wrong", format: :json),
-      params: { action: "confirm_check_out" }
+      params: { operation: "confirm_check_out" }
 
     assert_response :unauthorized
   end
@@ -37,7 +37,7 @@ class HermesActionsControllerTest < ActionDispatch::IntegrationTest
     LunchLog.create!(visited_on: 1.month.ago.to_date, shop_name: "先月ランチ", price: 1200, rating: 3, crowdedness: "普通")
 
     post hermes_action_webhook_url(ai_message.public_id, token: ai_message.callback_token, format: :json),
-      params: { action: "monthly_spending_summary" }
+      params: { operation: "monthly_spending_summary" }
 
     assert_response :success
     payload = JSON.parse(response.body)
@@ -51,14 +51,28 @@ class HermesActionsControllerTest < ActionDispatch::IntegrationTest
     assert_match "合計¥1,800", payload["message"]
   end
 
-  test "rejects unsupported action" do
+  test "rejects unsupported operation" do
     ai_message = AiMessage.create!(body: "今日の退勤して", mode: "dashboard")
 
     post hermes_action_webhook_url(ai_message.public_id, token: ai_message.callback_token, format: :json),
-      params: { action: "destroy_everything" }
+      params: { operation: "destroy_everything" }
 
     assert_response :unprocessable_entity
     payload = JSON.parse(response.body)
     assert_equal false, payload["ok"]
+  end
+
+  test "rejects reserved Rails action param and requires operation" do
+    ai_message = AiMessage.create!(body: "今日の退勤して", mode: "dashboard")
+    today = WorkDay.today
+    today.update!(check_out_confirmed: false, check_out_confirmed_at: nil)
+
+    post hermes_action_webhook_url(ai_message.public_id, token: ai_message.callback_token, format: :json),
+      params: { action: "confirm_check_out" }
+
+    assert_response :unprocessable_entity
+    payload = JSON.parse(response.body)
+    assert_equal false, payload["ok"]
+    assert_not WorkDay.today.check_out_confirmed?
   end
 end

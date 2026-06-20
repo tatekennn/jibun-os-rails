@@ -14,8 +14,8 @@ class DiscordAppMessageNotifierTest < ActiveSupport::TestCase
     assert_includes content, "自分OSアプリ経由"
     assert_includes content, "編集ボタンをもっと押しやすくしたい"
     assert_includes content, "mode: dashboard"
-    assert_includes content, "このDiscordスレッドに届いた文章は、アプリ内AIチャットから送られた通常投稿です。"
-    assert_includes content, "以降はこのスレッドでそのまま返答します。"
+    assert_includes content, "このDiscord投稿は任意の人間向け通知ログです。"
+    assert_includes content, "アプリ内返信の主経路はHermes Webhook + Rails callbackです。"
   end
 
   test "includes app context when provided" do

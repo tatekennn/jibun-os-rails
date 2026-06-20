@@ -22,6 +22,8 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     assert_equal "/", payload[:path]
     assert_includes payload[:context], "tatekennn/jibun-os-rails"
     assert_includes payload[:context], "Render Web Service jibun-os"
+    assert_includes payload[:context], "必ずcallback_urlへJSONでPOST"
+    assert_includes payload[:context], "action_urlへ許可済みoperation"
     assert_equal ai_message.public_id, payload[:message_id]
     assert_includes payload[:callback_url], ai_message.public_id
     assert_includes payload[:callback_url], ai_message.callback_token

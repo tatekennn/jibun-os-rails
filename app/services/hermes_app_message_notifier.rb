@@ -49,6 +49,8 @@ class HermesAppMessageNotifier
         作業時はREADME.md、git status、関連ファイルを確認し、必要なら検索・コード変更・テスト・commit・pushまで進めます。
         config/master.keyなどの秘密情報は絶対にGitHubへ入れません。
         アプリ内チャットでは特定の人格設定やsoul.mdは前提にしません。
+        重要: 最終的なアプリ表示用返信は必ずcallback_urlへJSONでPOSTしてください。成功時は {"reply":"ユーザーに表示する最終返信"}、失敗時は {"error":"ユーザーに表示するエラー"} を送ります。
+        打刻確認や月次支出集計などRailsアプリ内データの操作・参照が必要な場合だけ、action_urlへ {"operation":"confirm_check_out"} のように許可済みoperationをJSONでPOSTし、その結果を要約してcallback_urlへ返してください。任意URLや任意SQLは使いません。
       CONTEXT
     end
 
