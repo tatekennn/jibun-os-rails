@@ -12,27 +12,27 @@
 
   <div>
     <%= form.label :used_on, "乗った日" %>
-    <%= form.date_field :used_on %>
+    <%= form.date_field :used_on, autocomplete: "off" %>
   </div>
 
   <div>
     <%= form.label :line_name, "路線名" %>
-    <%= form.text_field :line_name %>
+    <%= form.text_field :line_name, placeholder: "例: 湘南ライナー / ロマンスカー" %>
   </div>
 
   <div>
     <%= form.label :direction, "方向" %>
-    <%= form.text_field :direction %>
+    <%= form.text_field :direction, placeholder: "例: 帰り / 新宿方面" %>
   </div>
 
   <div>
     <%= form.label :fare, "金額" %>
-    <%= form.number_field :fare %>
+    <%= form.number_field :fare, inputmode: "numeric", placeholder: "例: 750" %>
   </div>
 
   <div>
     <%= form.label :reason, "理由" %>
-    <%= form.text_field :reason %>
+    <%= form.text_field :reason, placeholder: "例: 疲れていた / 急ぎ" %>
   </div>
 
   <div class="range-field">
@@ -45,11 +45,11 @@
 
   <div>
     <%= form.label :memo, "メモ" %>
-    <%= form.text_area :memo %>
+    <%= form.text_area :memo, placeholder: "あとで見返したいことだけ短く" %>
   </div>
 
-  <div>
-    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
-    <%= link_to "戻る", paid_rides_path, class: "text-link" %>
+  <div class="form-actions">
+    <%= form.submit paid_ride.persisted? ? "変更を保存" : "記録する", class: "pixel-button pixel-button--full" %>
+    <%= link_to "一覧へ戻る", paid_rides_path, class: "text-link" %>
   </div>
 <% end %>

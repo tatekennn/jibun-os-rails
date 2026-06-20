@@ -30,6 +30,17 @@
 <% end %>
 
 <section class="log-list">
+  <% if @hobby_items.empty? %>
+    <div class="empty-state pixel-card">
+      <strong>趣味スロットは空です</strong>
+      <p>予定でもメモでも、散らばる前にここへ置けます。</p>
+      <div class="split-actions">
+        <%= link_to "予定を追加", new_hobby_item_path(item_type: "event"), class: "pixel-button pixel-button--full" %>
+        <%= link_to "メモを追加", new_hobby_item_path(item_type: "memo"), class: "pixel-button" %>
+      </div>
+    </div>
+  <% end %>
+
   <% @hobby_items.each do |hobby_item| %>
     <article class="pixel-card compact-card">
       <div class="list-line">
@@ -50,7 +61,7 @@
       </div>
       <div class="inline-actions">
         <%= link_to "編集", edit_hobby_item_path(hobby_item) %>
-        <%= button_to "削除", hobby_item_path(hobby_item), method: :delete, data: { turbo_confirm: "この趣味アイテムを削除しますか？" } %>
+        <%= button_to "削除", hobby_item_path(hobby_item), method: :delete, class: "danger-action", data: { turbo_confirm: "この趣味アイテムを削除しますか？" } %>
       </div>
     </article>
   <% end %>

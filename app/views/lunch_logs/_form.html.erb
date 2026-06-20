@@ -12,22 +12,22 @@
 
   <div>
     <%= form.label :visited_on, "行った日" %>
-    <%= form.date_field :visited_on %>
+    <%= form.date_field :visited_on, autocomplete: "off" %>
   </div>
 
   <div>
     <%= form.label :shop_name, "店名" %>
-    <%= form.text_field :shop_name %>
+    <%= form.text_field :shop_name, placeholder: "例: 渋谷の定食屋" %>
   </div>
 
   <div>
     <%= form.label :area, "エリア" %>
-    <%= form.text_field :area %>
+    <%= form.text_field :area, placeholder: "例: 道玄坂 / 宮益坂" %>
   </div>
 
   <div>
     <%= form.label :price, "価格" %>
-    <%= form.number_field :price %>
+    <%= form.number_field :price, inputmode: "numeric", placeholder: "例: 980" %>
   </div>
 
   <div class="range-field">
@@ -55,11 +55,11 @@
 
   <div>
     <%= form.label :memo, "メモ" %>
-    <%= form.text_area :memo %>
+    <%= form.text_area :memo, placeholder: "混み具合、席、また行きたい理由など" %>
   </div>
 
-  <div>
-    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
-    <%= link_to "戻る", lunch_logs_path, class: "text-link" %>
+  <div class="form-actions">
+    <%= form.submit lunch_log.persisted? ? "変更を保存" : "ランチを記録", class: "pixel-button pixel-button--full" %>
+    <%= link_to "一覧へ戻る", lunch_logs_path, class: "text-link" %>
   </div>
 <% end %>

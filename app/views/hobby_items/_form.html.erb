@@ -12,7 +12,7 @@
 
   <div>
     <%= form.label :title, "タイトル" %>
-    <%= form.text_field :title %>
+    <%= form.text_field :title, placeholder: "例: 週末ライブ / 読みたい本" %>
   </div>
 
   <div>
@@ -32,22 +32,22 @@
 
   <div>
     <%= form.label :location, "場所" %>
-    <%= form.text_field :location %>
+    <%= form.text_field :location, placeholder: "例: 渋谷 / 自宅" %>
   </div>
 
   <div>
     <%= form.label :cost, "費用" %>
-    <%= form.number_field :cost %>
+    <%= form.number_field :cost, inputmode: "numeric", placeholder: "例: 3500" %>
   </div>
 
   <div>
     <%= form.label :url, "URL" %>
-    <%= form.url_field :url %>
+    <%= form.url_field :url, placeholder: "https://..." %>
   </div>
 
   <div>
     <%= form.label :body, "本文" %>
-    <%= form.text_area :body %>
+    <%= form.text_area :body, placeholder: "予定の詳細や感想をここに" %>
   </div>
 
   <div class="range-field">
@@ -63,8 +63,8 @@
     <%= form.select :status, [["予定", "planned"], ["完了", "done"], ["保管", "archived"]] %>
   </div>
 
-  <div>
-    <%= form.submit "保存", class: "pixel-button pixel-button--full" %>
-    <%= link_to "戻る", hobby_items_path, class: "text-link" %>
+  <div class="form-actions">
+    <%= form.submit hobby_item.persisted? ? "変更を保存" : "保存する", class: "pixel-button pixel-button--full" %>
+    <%= link_to "一覧へ戻る", hobby_items_path, class: "text-link" %>
   </div>
 <% end %>

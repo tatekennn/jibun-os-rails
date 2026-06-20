@@ -1,0 +1,23 @@
+<% content_for :title, "ログイン - 自分OS" %>
+
+<section class="login-screen">
+  <div class="login-card">
+    <p class="section-eyebrow">PRIVATE PWA</p>
+    <h1>自分OSにログイン</h1>
+    <p class="login-card__lead">出勤・ランチ・趣味メモを扱う個人用アプリです。本人だけが開けるよう、入口を軽く閉じています。</p>
+
+    <%= form_with url: login_path, scope: :session, class: "login-form", data: { turbo: false } do |form| %>
+      <div class="field-stack">
+        <%= form.label :email, "メールアドレス" %>
+        <%= form.email_field :email, autocomplete: "username", inputmode: "email", placeholder: "owner@example.com" %>
+      </div>
+
+      <div class="field-stack">
+        <%= form.label :password, "パスワード" %>
+        <%= form.password_field :password, autocomplete: "current-password", placeholder: "••••••••" %>
+      </div>
+
+      <%= form.submit "起動する", class: "primary-action login-form__submit" %>
+    <% end %>
+  </div>
+</section>

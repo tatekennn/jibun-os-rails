@@ -13,3 +13,13 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+module AuthenticationTestHelper
+  def sign_in_as_owner
+    post login_url, params: { session: { email: "owner@example.com", password: "password" } }
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  include AuthenticationTestHelper
+end

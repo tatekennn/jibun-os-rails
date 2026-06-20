@@ -1,6 +1,10 @@
 require "test_helper"
 
 class HomeMocksControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in_as_owner
+  end
+
   test "should get index" do
     get home_mocks_url
     assert_response :success

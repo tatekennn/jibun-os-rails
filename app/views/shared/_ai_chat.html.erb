@@ -1,24 +1,26 @@
-<aside class="ai-dock" aria-label="AIチャット">
+<aside class="ai-dock" aria-label="AIチャット" data-ai-chat-endpoint-value="<%= ai_messages_path(format: :json) %>">
   <div class="ai-dock__header">
     <span class="pixel-face" aria-hidden="true"></span>
     <div>
       <p>AIチャット</p>
       <strong data-ai-chat-target="modeLabel">ダッシュボード調整</strong>
+      <small data-ai-chat-target="statusText">待機中。画面の優先度だけ調整します。</small>
     </div>
   </div>
 
-  <div class="ai-dock__log" data-ai-chat-target="log">
-    <p><span>OS</span> 今日の見え方を少し変えます。</p>
+  <div class="ai-dock__log" data-ai-chat-target="log" aria-live="polite">
+    <p class="ai-dock__message ai-dock__message--os"><span>OS</span> 今日の見え方を少し変えられます。</p>
   </div>
 
-  <div class="ai-dock__chips">
+  <div class="ai-dock__chips" aria-label="クイック調整">
     <button type="button" data-action="ai-chat#setMode" data-ai-chat-mode-param="rest">疲れ気味</button>
     <button type="button" data-action="ai-chat#setMode" data-ai-chat-mode-param="budget">節約</button>
+    <button type="button" data-action="ai-chat#setMode" data-ai-chat-mode-param="lunch">ランチ</button>
     <button type="button" data-action="ai-chat#setMode" data-ai-chat-mode-param="hobby">趣味優先</button>
   </div>
 
   <form class="ai-dock__form" data-action="submit->ai-chat#send">
-    <input data-ai-chat-target="input" type="text" placeholder="例: 今日は早く帰りたい" aria-label="AIチャット入力">
-    <button type="submit">送信</button>
+    <input data-ai-chat-target="input" type="text" placeholder="例: 今日は早く帰りたい" aria-label="AIチャット入力" autocomplete="off">
+    <button type="submit" data-ai-chat-target="submitButton">送信</button>
   </form>
 </aside>

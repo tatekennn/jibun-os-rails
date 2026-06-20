@@ -42,6 +42,14 @@
 <% end %>
 
 <section class="log-list">
+  <% if @lunch_logs.empty? %>
+    <div class="empty-state pixel-card">
+      <strong>ランチログは空です</strong>
+      <p>店名・価格・混み具合だけでも、次の昼が少し楽になります。</p>
+      <%= link_to "ランチを記録", new_lunch_log_path, class: "pixel-button pixel-button--full" %>
+    </div>
+  <% end %>
+
   <% @lunch_logs.each do |lunch_log| %>
     <article class="pixel-card compact-card">
       <div class="list-line">
@@ -58,7 +66,7 @@
       <% end %>
       <div class="inline-actions">
         <%= link_to "編集", edit_lunch_log_path(lunch_log) %>
-        <%= button_to "削除", lunch_log_path(lunch_log), method: :delete, data: { turbo_confirm: "このランチログを削除しますか？" } %>
+        <%= button_to "削除", lunch_log_path(lunch_log), method: :delete, class: "danger-action", data: { turbo_confirm: "このランチログを削除しますか？" } %>
       </div>
     </article>
   <% end %>

@@ -2,6 +2,10 @@ require "test_helper"
 
 class LunchLogsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in_as_owner
+  end
+
+  setup do
     @lunch_log = lunch_logs(:one)
   end
 

@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   root "dashboard#index"
 
+  get "/login", to: "sessions#new"
+  post "/login", to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
+
   resource :dashboard, only: :show, controller: :dashboard
   get "/home_mocks", to: "home_mocks#index"
 
@@ -15,6 +19,7 @@ Rails.application.routes.draw do
   resources :lunch_logs
   resources :hobby_items
   resources :paid_rides
+  resources :ai_messages, only: :create
 
   get "/offline", to: "pwa#offline"
 

@@ -2,6 +2,10 @@ require "test_helper"
 
 class HobbyItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in_as_owner
+  end
+
+  setup do
     @hobby_item = hobby_items(:one)
   end
 

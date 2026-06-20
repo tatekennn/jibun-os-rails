@@ -22,6 +22,14 @@
 </section>
 
 <section class="log-list">
+  <% if @paid_rides.empty? %>
+    <div class="empty-state pixel-card">
+      <strong>まだ記録はありません</strong>
+      <p>疲れた日だけで十分です。乗ったら金額と理由を短く残しましょう。</p>
+      <%= link_to "最初の記録を作る", new_paid_ride_path, class: "pixel-button pixel-button--full" %>
+    </div>
+  <% end %>
+
   <% @paid_rides.each do |paid_ride| %>
     <article class="pixel-card compact-card">
       <div class="list-line">
@@ -34,7 +42,7 @@
       <% end %>
       <div class="inline-actions">
         <%= link_to "編集", edit_paid_ride_path(paid_ride) %>
-        <%= button_to "削除", paid_ride_path(paid_ride), method: :delete, data: { turbo_confirm: "この有料列車ログを削除しますか？" } %>
+        <%= button_to "削除", paid_ride_path(paid_ride), method: :delete, class: "danger-action", data: { turbo_confirm: "この有料列車ログを削除しますか？" } %>
       </div>
     </article>
   <% end %>

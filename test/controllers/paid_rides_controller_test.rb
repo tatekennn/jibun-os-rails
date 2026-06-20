@@ -2,6 +2,10 @@ require "test_helper"
 
 class PaidRidesControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in_as_owner
+  end
+
+  setup do
     @paid_ride = paid_rides(:one)
   end
 
