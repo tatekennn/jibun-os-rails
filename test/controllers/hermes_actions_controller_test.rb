@@ -26,6 +26,31 @@ class HermesActionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
+  test "monthly_spending_summary returns this month totals" do
+    ai_message = AiMessage.create!(body: "今月いくら使った？？", mode: "dashboard")
+    PaidRide.delete_all
+    LunchLog.delete_all
+    PaidRide.create!(used_on: Date.current, line_name: "京王ライナー", direction: "帰り", fare: 410, reason: "疲れ", fatigue_level: 4)
+    PaidRide.create!(used_on: Date.current, line_name: "京王ライナー", direction: "帰り", fare: 410, reason: "疲れ", fatigue_level: 3)
+    LunchLog.create!(visited_on: Date.current, shop_name: "渋谷定食", area: "渋谷", price: 980, rating: 4, crowdedness: "普通")
+    PaidRide.create!(used_on: 1.month.ago.to_date, line_name: "京王ライナー", fare: 410, fatigue_level: 3)
+    LunchLog.create!(visited_on: 1.month.ago.to_date, shop_name: "先月ランチ", price: 1200, rating: 3, crowdedness: "普通")
+
+    post hermes_action_webhook_url(ai_message.public_id, token: ai_message.callback_token, format: :json),
+      params: { action: "monthly_spending_summary" }
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    assert_equal true, payload["ok"]
+    assert_equal "monthly_spending_summary", payload["action"]
+    assert_equal 1800, payload["total"]
+    assert_equal 2, payload.dig("paid_rides", "count")
+    assert_equal 820, payload.dig("paid_rides", "total")
+    assert_equal 1, payload.dig("lunch_logs", "count")
+    assert_equal 980, payload.dig("lunch_logs", "total")
+    assert_match "合計¥1,800", payload["message"]
+  end
+
   test "rejects unsupported action" do
     ai_message = AiMessage.create!(body: "今日の退勤して", mode: "dashboard")
 
