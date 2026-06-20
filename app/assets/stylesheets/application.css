@@ -2506,19 +2506,25 @@ body:not(.home_mocks) .ai-dock__form button {
 }
 
 body:not(.home_mocks) .bottom-nav {
-  right: max(12px, calc((100vw - 460px) / 2 + 12px));
-  bottom: max(12px, env(safe-area-inset-bottom));
+  left: 50%;
+  right: auto;
+  bottom: 0;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 2px;
-  width: min(436px, calc(100vw - 24px));
-  padding: 7px;
-  border-radius: 28px;
+  width: min(436px, 100vw);
+  padding: 7px 7px calc(7px + env(safe-area-inset-bottom));
+  border-radius: 28px 28px 0 0;
   background: rgba(255, 255, 255, 0.96);
   box-shadow:
-    0 16px 38px rgba(18, 20, 24, 0.12),
+    0 -8px 30px rgba(18, 20, 24, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  transform: translate3d(-50%, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform;
+  contain: layout paint;
   backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }
 
 body:not(.home_mocks) .bottom-nav__item {
@@ -3085,6 +3091,7 @@ body:not(.home_mocks) textarea:focus-visible {
   body:not(.home_mocks) .bottom-nav {
     position: sticky;
     top: 254px;
+    left: auto;
     right: auto;
     bottom: auto;
     grid-column: 2;
@@ -3098,6 +3105,8 @@ body:not(.home_mocks) textarea:focus-visible {
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.8);
     box-shadow: 0 18px 48px rgba(19, 38, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: none;
+    will-change: auto;
   }
 
   body:not(.home_mocks) .bottom-nav__item {
