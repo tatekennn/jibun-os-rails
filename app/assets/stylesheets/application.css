@@ -7108,19 +7108,19 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* Dashboard mobile first-view tightening */
+/* Dashboard mobile safe-area top v2: keep the home header below iPhone/PWA status icons */
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
-      padding-top: 0;
+      padding-top: env(safe-area-inset-top);
     }
 
     body.dashboard .app-shell {
-      padding-top: max(8px, calc(env(safe-area-inset-top) - 44px));
+      padding-top: 8px;
     }
 
     body.dashboard .top-bar {
-      top: 0;
+      top: env(safe-area-inset-top);
     }
   }
 }
