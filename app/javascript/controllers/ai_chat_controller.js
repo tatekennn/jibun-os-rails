@@ -50,7 +50,7 @@ export default class extends Controller {
     this.appendLine("YOU", text)
     this.inputTarget.value = ""
     this.applyMode(mode, false)
-    await this.forwardToHermes(text, mode)
+    await this.forwardToDiscordThread(text, mode)
   }
 
   applyMode(mode, announce = true) {
@@ -106,7 +106,7 @@ export default class extends Controller {
     }[mode] || "了解です。全体を整えます。"
   }
 
-  async forwardToHermes(text, mode) {
+  async forwardToDiscordThread(text, mode) {
     if (!this.hasEndpointValue) return
 
     try {
@@ -126,9 +126,11 @@ export default class extends Controller {
 
       if (response.ok && payload.ok) {
         const line = this.appendLine("AI", payload.assistant_reply || payload.message)
-        if (payload.id && !payload.completed) {
+        if (payload.completed) {
+          this.statusTextTarget.textContent = "Discordスレッドへ送りました。"
+        } else if (payload.id) {
           line.dataset.status = "waiting"
-          this.statusTextTarget.textContent = "Hermesの実行結果を待っています。この画面は自動更新します。"
+          this.statusTextTarget.textContent = "Discordスレッドへの送信結果を待っています。この画面は自動更新します。"
           this.pollReply(payload.id, line)
         }
       } else {
@@ -150,7 +152,7 @@ export default class extends Controller {
 
     if (attempt >= maxAttempts) {
       delete line.dataset.status
-      this.statusTextTarget.textContent = "返信待ちが長引いています。Discord通知とHermes側の実行状況を確認してください。"
+      this.statusTextTarget.textContent = "送信確認が長引いています。Discordスレッド側を確認してください。"
       this.replaceLineText(line, "返信待ちが長引いています。Discordには届いている可能性があります。必要なら少し時間を置いて再送してください。")
       return
     }
@@ -171,13 +173,13 @@ export default class extends Controller {
 
         if (payload.completed) {
           delete line.dataset.status
-          this.statusTextTarget.textContent = "返信を受け取りました。"
+          this.statusTextTarget.textContent = "Discordスレッドへ送りました。"
           this.replaceLineText(line, payload.assistant_reply || payload.message)
           return
         }
 
         if (attempt === 8) {
-          this.replaceLineText(line, "まだ処理中です。実データ操作やデプロイ確認は少し時間がかかることがあります。")
+          this.replaceLineText(line, "まだ送信処理中です。Discordスレッド側に届いているかも確認してください。")
           line.dataset.status = "waiting"
         }
 

@@ -4,12 +4,12 @@
   <div>
     <p class="eyebrow">CHAT</p>
     <h1>AIチャット</h1>
-    <p>自然文で記録確認やアプリ改善を依頼できます。返答はこの画面へ戻ります。</p>
+    <p>自然文で記録確認やアプリ改善を依頼できます。投稿はDiscordスレッドへ送り、続きはDiscord側で返します。</p>
   </div>
   <%= link_to "ホーム", root_path, class: "ghost-button" %>
 </section>
 
-<section class="chat-room" aria-label="AIチャット">
+<section class="chat-room" aria-label="AIチャット" data-controller="ai-chat" data-ai-chat-default-mode-value="dashboard" data-ai-chat-endpoint-value="<%= ai_messages_path(format: :json) %>">
   <details class="chat-room__context pixel-card">
     <summary>
       <span>
@@ -32,12 +32,12 @@
       <div>
         <p>AIチャット</p>
         <strong data-ai-chat-target="modeLabel">待機中</strong>
-        <small data-ai-chat-target="statusText">送信すると、Discord通知とHermes実行結果をこの画面へ戻します。</small>
+        <small data-ai-chat-target="statusText">送信すると、Discordスレッドへ投稿してアプリ側は送信済みにします。</small>
       </div>
     </div>
 
     <div class="ai-dock__log chat-room__log" data-ai-chat-target="log" aria-live="polite">
-      <p class="ai-dock__message ai-dock__message--os"><span>AI</span> 依頼を送ると、まず受付を表示し、その後Hermesからの完了返信に自動で差し替えます。</p>
+      <p class="ai-dock__message ai-dock__message--os"><span>AI</span> 依頼を送ると、このDiscordスレッドへ転送します。アプリ側は送信済みとして完了します。</p>
     </div>
 
     <div class="ai-dock__chips chat-room__chips" aria-label="依頼テンプレート">

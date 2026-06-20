@@ -13,20 +13,15 @@ class AiMessagesController < ApplicationController
 
     ai_message = AiMessage.create!(body: body, mode: mode, context: context)
 
-    ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request)
-    hermes_result = ::HermesAppMessageNotifier.call(
-      body: body,
-      mode: mode,
-      request: request,
-      context: context,
-      ai_message: ai_message
-    )
+    discord_result = ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request, context: context)
 
-    if hermes_result == :skipped
-      ai_message.complete!(reply: "Hermes連携URLが未設定のため、アプリ内返信はここで止めています。")
-      ai_message.update!(delivery_message: "Discordへ送信しました。")
+    if discord_result == :skipped
+      ai_message.fail!(message: "Discord連携URLが未設定です。")
+      render json: { ok: false, message: "Discord連携URLが未設定です。Render環境変数を確認してください。" }, status: :bad_gateway
+      return
     else
-      ai_message.mark_delivered!(message: "DiscordとHermesへ送信しました。")
+      ai_message.complete!(reply: discord_handoff_reply)
+      ai_message.update!(delivery_message: "Discordスレッドへ送信しました。")
     end
 
     render json: serialize_message(ai_message, initial: true)
@@ -34,10 +29,6 @@ class AiMessagesController < ApplicationController
     Rails.logger.warn("Discord app message delivery failed: #{error.message}")
     ai_message&.fail!(message: "Discordへの送信に失敗しました。")
     render json: { ok: false, message: "Discordへの送信に失敗しました。少し時間を置いて再送してください。" }, status: :bad_gateway
-  rescue ::HermesAppMessageNotifier::DeliveryError => error
-    Rails.logger.warn("Hermes app message delivery failed: #{error.message}")
-    ai_message&.fail!(message: "Hermesへの送信に失敗しました。")
-    render json: { ok: false, message: "Hermesへの送信に失敗しました。少し時間を置いて再送してください。" }, status: :bad_gateway
   end
 
   def show
@@ -67,9 +58,16 @@ class AiMessagesController < ApplicationController
     return ai_message.error_message if ai_message.status == "failed"
 
     if initial
-      "受け取りました。実行結果が戻るまで、この画面で待機します。"
+      "受け取りました。Discordスレッドへ送信しています。"
     else
-      "まだ処理中です。もう少し待っています。"
+      "まだ送信処理中です。もう少し待っています。"
     end
+  end
+
+  def discord_handoff_reply
+    <<~REPLY.squish
+      Discordスレッドに送りました。Hermesへの直接callbackは一旦使わず、以降はDiscord側で返事します。
+      アプリ側では送信済みとして扱います。
+    REPLY
   end
 end
