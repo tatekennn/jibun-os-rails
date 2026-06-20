@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["input", "log", "modeLabel", "statusText", "submitButton", "context", "notificationButton"]
-  static values = { defaultMode: String, endpoint: String }
+  static values = { defaultMode: String, endpoint: String, pushSubscriptionsEndpoint: String, vapidPublicKey: String }
 
   connect() {
     const savedMode = localStorage.getItem("jibun_os_mode") || this.defaultModeValue
@@ -44,27 +44,31 @@ export default class extends Controller {
   async enableNotifications() {
     if (!this.notificationsSupported()) return
 
-    if (Notification.permission === "granted") {
-      localStorage.setItem("jibun_os_ai_notify", "enabled")
-      this.refreshNotificationButton()
-      this.statusTextTarget.textContent = "返信完了時にブラウザ通知します。"
-      return
-    }
-
     if (Notification.permission === "denied") {
       this.statusTextTarget.textContent = "通知がブラウザ側でブロックされています。Safari/設定から許可してください。"
       this.refreshNotificationButton()
       return
     }
 
-    const permission = await Notification.requestPermission()
-    if (permission === "granted") {
-      localStorage.setItem("jibun_os_ai_notify", "enabled")
-      this.statusTextTarget.textContent = "返信完了時にブラウザ通知します。"
-    } else {
+    const permission = Notification.permission === "granted" ? "granted" : await Notification.requestPermission()
+    if (permission !== "granted") {
       localStorage.removeItem("jibun_os_ai_notify")
       this.statusTextTarget.textContent = "通知はOFFのままです。返信はこの画面に表示されます。"
+      this.refreshNotificationButton()
+      return
     }
+
+    localStorage.setItem("jibun_os_ai_notify", "enabled")
+
+    if (this.pushNotificationsSupported()) {
+      const subscribed = await this.enablePushNotifications()
+      this.statusTextTarget.textContent = subscribed
+        ? "ロック中でもAI返信通知が届くようにしました。"
+        : "ブラウザ通知はONです。ロック中通知の登録だけ失敗しました。"
+    } else {
+      this.statusTextTarget.textContent = "返信完了時にブラウザ通知します。ロック中通知はサーバー設定後に使えます。"
+    }
+
     this.refreshNotificationButton()
   }
 
@@ -179,6 +183,55 @@ export default class extends Controller {
     return "Notification" in window
   }
 
+  pushNotificationsSupported() {
+    return this.notificationsSupported() && "serviceWorker" in navigator && "PushManager" in window && this.hasVapidPublicKeyValue && this.vapidPublicKeyValue.length > 0 && this.hasPushSubscriptionsEndpointValue
+  }
+
+  async enablePushNotifications() {
+    try {
+      const registration = await this.serviceWorkerRegistration()
+      const existingSubscription = await registration.pushManager.getSubscription()
+      const subscription = existingSubscription || await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKeyValue)
+      })
+
+      const response = await fetch(this.pushSubscriptionsEndpointValue, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "X-CSRF-Token": this.csrfToken()
+        },
+        body: JSON.stringify({ subscription: subscription.toJSON() })
+      })
+
+      return response.ok
+    } catch (_error) {
+      return false
+    }
+  }
+
+  async serviceWorkerRegistration() {
+    const existing = await navigator.serviceWorker.getRegistration("/")
+    if (existing) return existing
+
+    return navigator.serviceWorker.register("/service-worker", { scope: "/" })
+  }
+
+  urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - base64String.length % 4) % 4)
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/")
+    const rawData = window.atob(base64)
+    const outputArray = new Uint8Array(rawData.length)
+
+    for (let i = 0; i < rawData.length; i += 1) {
+      outputArray[i] = rawData.charCodeAt(i)
+    }
+
+    return outputArray
+  }
+
   notificationsEnabled() {
     return this.notificationsSupported() && Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "enabled"
   }
@@ -189,13 +242,13 @@ export default class extends Controller {
     this.notificationButtonTarget.hidden = false
 
     if (Notification.permission === "granted" && localStorage.getItem("jibun_os_ai_notify") === "enabled") {
-      this.notificationButtonTarget.textContent = "完了通知ON"
+      this.notificationButtonTarget.textContent = this.pushNotificationsSupported() ? "ロック中通知ON" : "完了通知ON"
       this.notificationButtonTarget.disabled = true
     } else if (Notification.permission === "denied") {
       this.notificationButtonTarget.textContent = "通知ブロック中"
       this.notificationButtonTarget.disabled = true
     } else {
-      this.notificationButtonTarget.textContent = "完了通知をON"
+      this.notificationButtonTarget.textContent = this.pushNotificationsSupported() ? "ロック中通知をON" : "完了通知をON"
       this.notificationButtonTarget.disabled = false
     }
   }

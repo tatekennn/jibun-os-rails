@@ -12,6 +12,7 @@ class HermesRepliesController < ApplicationController
 
     if params[:error].present?
       ai_message.fail!(message: params[:error])
+      PushNotificationDelivery.ai_reply_finished!(ai_message)
       render json: { ok: true, status: ai_message.status }
       return
     end
@@ -24,6 +25,7 @@ class HermesRepliesController < ApplicationController
     end
 
     ai_message.complete!(reply: reply)
+    PushNotificationDelivery.ai_reply_finished!(ai_message)
     render json: { ok: true, status: ai_message.status }
   end
 

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resources :hobby_items
   resources :paid_rides
   resources :ai_messages, only: %i[create show]
+  resources :push_subscriptions, only: %i[create destroy]
   post "/webhooks/hermes_replies/:id", to: "hermes_replies#create", as: :hermes_reply_webhook
   post "/webhooks/hermes_actions/:id", to: "hermes_actions#create", as: :hermes_action_webhook
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_20_111500) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_20_232221) do
   create_table "ai_messages", force: :cascade do |t|
     t.string "public_id", null: false
     t.string "callback_token", null: false
@@ -74,6 +74,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_20_111500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["used_on"], name: "index_paid_rides_on_used_on"
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.text "endpoint", null: false
+    t.text "p256dh_key", null: false
+    t.text "auth_key", null: false
+    t.string "user_agent"
+    t.integer "failure_count", default: 0, null: false
+    t.datetime "last_success_at"
+    t.datetime "failed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
   end
 
   create_table "work_days", force: :cascade do |t|

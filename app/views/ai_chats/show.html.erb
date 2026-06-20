@@ -9,7 +9,7 @@
   <%= link_to "ホーム", root_path, class: "ghost-button" %>
 </section>
 
-<section class="chat-room" aria-label="AIチャット" data-controller="ai-chat" data-ai-chat-default-mode-value="dashboard" data-ai-chat-endpoint-value="<%= ai_messages_path(format: :json) %>">
+<section class="chat-room" aria-label="AIチャット" data-controller="ai-chat" data-ai-chat-default-mode-value="dashboard" data-ai-chat-endpoint-value="<%= ai_messages_path(format: :json) %>" data-ai-chat-push-subscriptions-endpoint-value="<%= push_subscriptions_path(format: :json) %>" data-ai-chat-vapid-public-key-value="<%= ENV["VAPID_PUBLIC_KEY"].to_s %>">
   <details class="chat-room__context pixel-card">
     <summary>
       <span>
@@ -35,7 +35,7 @@
         <small data-ai-chat-target="statusText">送信すると、Hermes Agentが考えてこの画面に返信します。</small>
       </div>
       <button type="button" class="chat-room__notify-button" data-ai-chat-target="notificationButton" data-action="ai-chat#enableNotifications" hidden>
-        完了通知をON
+        ロック中通知をON
       </button>
     </div>
 
