@@ -6961,3 +6961,69 @@ body.dashboard .pixel-logo {
     width: 100%;
   }
 }
+
+/* PWA/iPhone safe-area fixes */
+@supports (padding: max(0px)) {
+  body {
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .app-shell {
+    min-height: calc(100dvh - env(safe-area-inset-top));
+    padding-bottom: calc(236px + env(safe-area-inset-bottom));
+  }
+
+  .top-bar {
+    top: env(safe-area-inset-top);
+  }
+
+  .bottom-nav {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  body.dashboard .bottom-nav {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  body.ai_chats .app-shell {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 480px) {
+  body.ai_chats .chat-page__head {
+    gap: 10px;
+    padding-top: 12px;
+  }
+
+  body.ai_chats .chat-page__head h1 {
+    font-size: clamp(28px, 10vw, 40px);
+  }
+
+  body.ai_chats .chat-page__head p:last-child {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  body.ai_chats .chat-room__panel.ai-dock {
+    min-height: auto;
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  body.ai_chats .chat-room__log {
+    min-height: 34dvh;
+    max-height: 42dvh;
+  }
+
+  .chat-room__chips {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body.ai_chats .bottom-nav {
+    width: calc(100vw - 20px);
+    right: 10px;
+    left: 10px;
+  }
+}
