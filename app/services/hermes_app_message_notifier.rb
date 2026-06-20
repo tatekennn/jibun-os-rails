@@ -8,10 +8,10 @@ class HermesAppMessageNotifier
   class DeliveryError < StandardError; end
 
   class << self
-    def call(body:, mode:, request:, context: nil, ai_message: nil)
+    def call(body:, mode:, request:, context: nil, ai_message: nil, conversation_history: [])
       return :skipped if webhook_url.blank?
 
-      json_body = build_payload(body: body, mode: mode, request: request, context: context, ai_message: ai_message).to_json
+      json_body = build_payload(body: body, mode: mode, request: request, context: context, ai_message: ai_message, conversation_history: conversation_history).to_json
       response = Net::HTTP.post(
         webhook_uri,
         json_body,
@@ -25,13 +25,13 @@ class HermesAppMessageNotifier
       raise DeliveryError, error.message
     end
 
-    def build_payload(body:, mode:, request:, context: nil, ai_message: nil)
+    def build_payload(body:, mode:, request:, context: nil, ai_message: nil, conversation_history: [])
       {
         event_type: "jibun_os.ai_message",
         app: "jibun-os-rails",
         source: "自分OSアプリ",
         body: body.to_s.strip,
-        context: [default_context, context].compact_blank.join("\n\n--- app page context ---\n"),
+        context: [default_context, conversation_history_context(conversation_history), context].compact_blank.join("\n\n--- app page context ---\n"),
         mode: mode.presence || "dashboard",
         path: request&.path || "unknown",
         referer: request&.referer,
@@ -60,6 +60,19 @@ class HermesAppMessageNotifier
         打刻確認や月次支出集計などRailsアプリ内データの操作・参照が必要な場合だけ、action_urlへ {"operation":"confirm_check_out"} のように許可済みoperationをJSONでPOSTし、その結果を要約してcallback_urlへ返してください。任意URLや任意SQLは使いません。
         生活データ操作はRailsのaction_url経由を優先し、DBを直接乱暴に書き換えないでください。コード変更が必要な開発依頼と、日常ログ操作の依頼を区別してください。
       CONTEXT
+    end
+
+    def conversation_history_context(conversation_history)
+      messages = Array(conversation_history).first(5)
+      return if messages.blank?
+
+      lines = ["--- recent conversation history: last 5 rallies ---"]
+      messages.each_with_index do |message, index|
+        lines << "[#{index + 1}] mode=#{message.mode} at=#{message.created_at&.iso8601}"
+        lines << "User: #{message.body.to_s.strip}"
+        lines << "Hermes: #{message.conversation_reply.to_s.strip}"
+      end
+      lines.join("\n")
     end
 
     def client_hint_for(request)

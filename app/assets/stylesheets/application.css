@@ -6595,6 +6595,17 @@ body.ai_chats .chat-room__log {
   gap: 12px;
 }
 
+.chat-room__history-label {
+  align-self: center;
+  margin: 0 0 2px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #6b7280;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
 body.ai_chats .ai-dock__message {
   width: fit-content;
   max-width: 86%;

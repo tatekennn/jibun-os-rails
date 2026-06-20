@@ -12,6 +12,20 @@ class AiMessage < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
 
   scope :recent, -> { order(created_at: :desc) }
+  scope :with_conversation_reply, -> { where.not(assistant_reply: [nil, ""]).or(where.not(error_message: [nil, ""])) }
+
+  def self.recent_conversation(limit: 5, before: nil)
+    relation = with_conversation_reply.recent
+    if before&.persisted?
+      relation = relation.where("created_at < ? OR (created_at = ? AND id < ?)", before.created_at, before.created_at, before.id)
+    end
+
+    relation.limit(limit).to_a.reverse
+  end
+
+  def conversation_reply
+    assistant_reply.presence || error_message.presence
+  end
 
   def mark_delivered!(message: nil)
     update!(status: "delivered", delivery_message: message.presence || delivery_message)

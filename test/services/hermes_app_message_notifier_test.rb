@@ -9,11 +9,15 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
 
     ai_message = AiMessage.create!(body: "退勤チェックして今日のまとめを見たい", mode: "dashboard")
 
+    previous_message = AiMessage.create!(body: "昨日の退勤どうだった？", mode: "dashboard")
+    previous_message.complete!(reply: "昨日は退勤確認済みです。")
+
     payload = HermesAppMessageNotifier.build_payload(
       body: "退勤チェックして今日のまとめを見たい",
       mode: "dashboard",
       request: request,
-      ai_message: ai_message
+      ai_message: ai_message,
+      conversation_history: [previous_message]
     )
 
     assert_equal "jibun_os.ai_message", payload[:event_type]
@@ -35,6 +39,10 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     assert_includes payload[:context], "callback送信時は汎用terminal/python/curl"
     assert_includes payload[:context], "action_urlへ {\"operation\":\"confirm_check_out\"}"
     assert_includes payload[:context], "生活データ操作はRailsのaction_url経由"
+    assert_includes payload[:context], "--- recent conversation history: last 5 rallies ---"
+    assert_includes payload[:context], "[1] mode=dashboard"
+    assert_includes payload[:context], "User: 昨日の退勤どうだった？"
+    assert_includes payload[:context], "Hermes: 昨日は退勤確認済みです。"
     assert_equal ai_message.public_id, payload[:message_id]
     assert_includes payload[:callback_url], ai_message.public_id
     assert_includes payload[:callback_url], ai_message.callback_token

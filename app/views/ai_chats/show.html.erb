@@ -37,7 +37,15 @@
     </div>
 
     <div class="ai-dock__log chat-room__log" data-ai-chat-target="log" aria-live="polite">
-      <p class="ai-dock__message ai-dock__message--os"><span>Hermes</span> 依頼を送ると、Hermes Agentが処理してこの画面に返信します。</p>
+      <% if @recent_ai_messages.present? %>
+        <p class="chat-room__history-label">直近5ラリー</p>
+        <% @recent_ai_messages.each do |message| %>
+          <p class="ai-dock__message ai-dock__message--you"><span>YOU</span> <%= message.body %></p>
+          <p class="ai-dock__message ai-dock__message--ai"><span>Hermes</span> <%= message.conversation_reply %></p>
+        <% end %>
+      <% else %>
+        <p class="ai-dock__message ai-dock__message--os"><span>Hermes</span> 依頼を送ると、Hermes Agentが処理してこの画面に返信します。</p>
+      <% end %>
     </div>
 
     <div class="ai-dock__chips chat-room__chips" aria-label="依頼テンプレート">

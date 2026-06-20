@@ -13,12 +13,15 @@ class AiMessagesController < ApplicationController
 
     ai_message = AiMessage.create!(body: body, mode: mode, context: context)
 
+    conversation_history = AiMessage.recent_conversation(limit: 5, before: ai_message)
+
     hermes_result = ::HermesAppMessageNotifier.call(
       body: body,
       mode: mode,
       request: request,
       context: context,
-      ai_message: ai_message
+      ai_message: ai_message,
+      conversation_history: conversation_history
     )
 
     if hermes_result == :skipped
