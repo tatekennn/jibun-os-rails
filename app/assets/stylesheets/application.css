@@ -7112,6 +7112,7 @@ body.dashboard .home-subscbox__summary {
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
+      --dashboard-home-rebuild-v1: 1;
       padding-top: env(safe-area-inset-top);
     }
 
