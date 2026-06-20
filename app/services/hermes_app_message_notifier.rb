@@ -8,10 +8,10 @@ class HermesAppMessageNotifier
   class DeliveryError < StandardError; end
 
   class << self
-    def call(body:, mode:, request:)
+    def call(body:, mode:, request:, context: nil)
       return :skipped if webhook_url.blank?
 
-      json_body = build_payload(body: body, mode: mode, request: request).to_json
+      json_body = build_payload(body: body, mode: mode, request: request, context: context).to_json
       response = Net::HTTP.post(
         webhook_uri,
         json_body,
@@ -25,17 +25,27 @@ class HermesAppMessageNotifier
       raise DeliveryError, error.message
     end
 
-    def build_payload(body:, mode:, request:)
+    def build_payload(body:, mode:, request:, context: nil)
       {
         event_type: "jibun_os.ai_message",
         app: "jibun-os-rails",
         source: "自分OSアプリ",
         body: body.to_s.strip,
+        context: [default_context, context].compact_blank.join("\n\n--- app page context ---\n"),
         mode: mode.presence || "dashboard",
         path: request&.path || "unknown",
         ip: request&.remote_ip || "unknown",
         sent_at: Time.current.iso8601
       }
+    end
+
+    def default_context
+      <<~CONTEXT.squish
+        自分OSRailsアプリからの依頼です。GitHub repoはtatekennn/jibun-os-rails、作業ディレクトリは/opt/data/jibun-os-railsです。
+        本命はRails版で、mainへpushするとRender Web Service jibun-osへ自動デプロイされます。
+        作業時はREADME.md、git status、関連ファイルを確認し、必要なら検索・コード変更・テスト・commit・pushまで進めます。
+        config/master.keyなどの秘密情報は絶対にGitHubへ入れません。
+      CONTEXT
     end
 
     def headers_for(json_body)

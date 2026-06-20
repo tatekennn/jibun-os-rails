@@ -17,6 +17,8 @@ class HermesAppMessageNotifierTest < ActiveSupport::TestCase
     assert_equal "退勤チェックして今日のまとめを見たい", payload[:body]
     assert_equal "dashboard", payload[:mode]
     assert_equal "/", payload[:path]
+    assert_includes payload[:context], "tatekennn/jibun-os-rails"
+    assert_includes payload[:context], "Render Web Service jibun-os"
     assert payload[:sent_at].present?
   end
 

@@ -4,6 +4,7 @@ class AiMessagesController < ApplicationController
   def create
     body = message_params[:body].to_s.strip
     mode = message_params[:mode].presence || "dashboard"
+    context = message_params[:context].to_s.strip.presence
 
     if body.blank?
       render json: { ok: false, message: "送信する文章を入力してください。" }, status: :unprocessable_entity
@@ -11,7 +12,7 @@ class AiMessagesController < ApplicationController
     end
 
     ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request)
-    hermes_result = ::HermesAppMessageNotifier.call(body: body, mode: mode, request: request)
+    hermes_result = ::HermesAppMessageNotifier.call(body: body, mode: mode, request: request, context: context)
     destination = hermes_result == :skipped ? "Discord" : "DiscordとHermes"
 
     render json: {
@@ -29,6 +30,6 @@ class AiMessagesController < ApplicationController
   private
 
   def message_params
-    params.fetch(:message, {}).permit(:body, :mode)
+    params.fetch(:message, {}).permit(:body, :mode, :context)
   end
 end

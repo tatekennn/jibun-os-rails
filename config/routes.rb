@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   delete "/logout", to: "sessions#destroy"
 
   resource :dashboard, only: :show, controller: :dashboard
+  resource :ai_chat, only: :show, controller: :ai_chats
   get "/home_mocks", to: "home_mocks#index"
 
   resources :work_days, only: %i[index update] do

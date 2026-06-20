@@ -388,7 +388,8 @@ button {
 .pixel-form input:not([type="checkbox"]):not([type="range"]),
 .pixel-form select,
 .pixel-form textarea,
-.ai-dock__form input {
+.ai-dock__form input,
+.ai-dock__form textarea {
   width: 100%;
   min-height: 42px;
   padding: 10px;
@@ -552,7 +553,7 @@ button {
   bottom: 12px;
   z-index: 30;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   width: min(436px, calc(100vw - 24px));
   padding: 6px;
   background: var(--paper-2);
@@ -667,6 +668,23 @@ button {
   height: 5px;
   border-radius: 50%;
   background: currentColor;
+}
+
+.nav-symbol--chat::before {
+  width: 18px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-radius: 7px;
+}
+
+.nav-symbol--chat::after {
+  right: 2px;
+  bottom: 3px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(35deg);
 }
 
 .pixel-logo,
@@ -2485,7 +2503,7 @@ body:not(.home_mocks) .bottom-nav {
   right: max(12px, calc((100vw - 460px) / 2 + 12px));
   bottom: max(12px, env(safe-area-inset-bottom));
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 2px;
   width: min(436px, calc(100vw - 24px));
   padding: 7px;
@@ -6394,5 +6412,116 @@ body.sessions .screen {
   .top-bar__logout {
     padding: 9px 12px;
     font-size: 12px;
+  }
+}
+
+/* Dedicated Hermes chat page */
+body.ai_chats .app-shell {
+  padding-bottom: 102px;
+}
+
+body.ai_chats .screen {
+  gap: 16px;
+}
+
+.chat-page__head {
+  align-items: center;
+}
+
+.chat-room {
+  display: grid;
+  gap: 14px;
+}
+
+.chat-room__context {
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(237, 252, 250, 0.78));
+  box-shadow: 0 18px 48px rgba(15, 118, 110, 0.12);
+}
+
+.chat-room__context h2 {
+  margin: 4px 0 10px;
+  font-size: 18px;
+}
+
+.chat-room__context ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(15, 23, 42, 0.72);
+  line-height: 1.65;
+}
+
+.chat-room__context code {
+  border-radius: 8px;
+  padding: 2px 6px;
+  background: rgba(15, 118, 110, 0.08);
+  color: #0f766e;
+}
+
+body.ai_chats .chat-room__panel.ai-dock {
+  position: static;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 24px 64px rgba(15, 118, 110, 0.16);
+  backdrop-filter: blur(20px);
+}
+
+.chat-room__assistant {
+  margin-bottom: 12px;
+}
+
+body.ai_chats .chat-room__log {
+  min-height: 260px;
+  max-height: none;
+  align-content: start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fbfffe, #f4fbfa);
+  font-size: 14px;
+}
+
+.chat-room__chips {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 12px 0;
+}
+
+body.ai_chats .chat-room__form {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.chat-room__form textarea {
+  min-height: 132px;
+  resize: vertical;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+body.ai_chats .chat-room__form button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #13bfb6, #5edbd4);
+  box-shadow: 0 12px 30px rgba(19, 191, 182, 0.25);
+  color: #ffffff;
+  font-size: 15px;
+}
+
+@media (min-width: 900px) {
+  body.ai_chats .app-shell {
+    width: min(100%, 860px);
+    padding-right: 300px;
   }
 }

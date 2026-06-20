@@ -49,8 +49,10 @@
         <%= yield %>
       </main>
 
-      <% if logged_in? %>
+      <% if logged_in? && params[:controller] != "ai_chats" %>
         <%= render "shared/ai_chat" %>
+        <%= render "shared/bottom_nav" %>
+      <% elsif logged_in? %>
         <%= render "shared/bottom_nav" %>
       <% end %>
     </div>

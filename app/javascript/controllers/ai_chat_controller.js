@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "log", "modeLabel", "statusText", "submitButton"]
+  static targets = ["input", "log", "modeLabel", "statusText", "submitButton", "context"]
   static values = { defaultMode: String, endpoint: String }
 
   connect() {
@@ -15,6 +15,15 @@ export default class extends Controller {
     this.applyMode(mode)
   }
 
+  insertPrompt(event) {
+    const prompt = event.params.prompt
+    if (!prompt || !this.hasInputTarget) return
+
+    this.inputTarget.value = prompt
+    this.inputTarget.focus()
+    this.inputTarget.setSelectionRange(this.inputTarget.value.length, this.inputTarget.value.length)
+  }
+
   async send(event) {
     event.preventDefault()
 
@@ -25,7 +34,7 @@ export default class extends Controller {
     this.appendLine("YOU", text)
     this.inputTarget.value = ""
     this.applyMode(mode)
-    await this.forwardToDiscord(text, mode)
+    await this.forwardToHermes(text, mode)
   }
 
   applyMode(mode, announce = true) {
@@ -81,10 +90,11 @@ export default class extends Controller {
     }[mode] || "了解です。全体を整えます。"
   }
 
-  async forwardToDiscord(text, mode) {
+  async forwardToHermes(text, mode) {
     if (!this.hasEndpointValue) return
 
     try {
+      const context = this.hasContextTarget ? this.contextTarget.value : ""
       const response = await fetch(this.endpointValue, {
         method: "POST",
         headers: {
@@ -92,17 +102,17 @@ export default class extends Controller {
           "Accept": "application/json",
           "X-CSRF-Token": this.csrfToken()
         },
-        body: JSON.stringify({ message: { body: text, mode } })
+        body: JSON.stringify({ message: { body: text, mode, context } })
       })
       const payload = await response.json()
 
       if (response.ok && payload.ok) {
         this.appendLine("OS", payload.message)
       } else {
-        this.appendLine("OS", payload.message || "Discordへの送信に失敗しました。")
+        this.appendLine("OS", payload.message || "Hermesへの送信に失敗しました。")
       }
     } catch (_error) {
-      this.appendLine("OS", "Discordへの送信に失敗しました。通信状態を確認してください。")
+      this.appendLine("OS", "Hermesへの送信に失敗しました。通信状態を確認してください。")
     }
   }
 

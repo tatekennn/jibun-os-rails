@@ -17,8 +17,8 @@ class AiMessagesControllerTest < ActionDispatch::IntegrationTest
     DiscordAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:|
       discord_delivered << { body: body, mode: mode, request: request }
     end
-    HermesAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:|
-      hermes_delivered << { body: body, mode: mode, request: request }
+    HermesAppMessageNotifier.define_singleton_method(:call) do |body:, mode:, request:, context: nil|
+      hermes_delivered << { body: body, mode: mode, request: request, context: context }
     end
 
     post ai_messages_url(format: :json), params: { message: { body: "ランチ入力をもっと楽にしたい", mode: "lunch" } }

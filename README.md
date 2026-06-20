@@ -51,7 +51,8 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 - 有料列車ログ: 月次回数、合計金額、理由、疲労度
 - 渋谷ランチログ: 価格、満足度、混雑度、一人利用、再訪フラグ、絞り込み
 - 趣味コーナー: 予定とメモをカテゴリ付きで保存
-- AIチャットUI: 入力やチップで画面のフォーカスが変わるUIだけを実装
+- AIチャットUI: 入力やチップで画面のフォーカスを変えつつ、投稿内容をDiscordとHermesへ送信
+- J.A.R.V.I.S.チャットページ: repo/Render/push方針などの前提を添えてHermesへ作業依頼を送る画面
 - PWA: manifest、service worker、offlineページ
 
 ## 主要ルート
@@ -66,6 +67,7 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 /lunch_logs/new           ランチ記録フォーム
 /hobby_items              趣味予定・メモ
 /hobby_items/new          趣味記録フォーム
+/ai_chat                  J.A.R.V.I.S.チャットページ
 /home_mocks               以前作ったホームデザインモック
 /manifest                 PWA manifest
 /service-worker           Service Worker
@@ -83,7 +85,10 @@ app/assets/stylesheets/application.css
   ほぼ全体のデザイン。スマホ/PCレスポンシブもここ。
 
 app/views/shared/_ai_chat.html.erb
-  AIチャットUI。
+  画面下部/右側のAIチャットUI。
+
+app/views/ai_chats/show.html.erb
+  J.A.R.V.I.S.チャットページ。repo、Render、push方針などの前提を添えてHermesへ依頼を送る。
 
 app/javascript/controllers/ai_chat_controller.js
   AIチャット風UIのモード切り替え。現時点では本物のAI API連携なし。
@@ -112,7 +117,10 @@ config/database.yml
 
 ## AIチャットUIの現状
 
-AIチャットはまだ本物のAIではありません。Stimulusで入力文を見て`data-ai-mode`を切り替え、画面上の強調対象を変えるだけです。
+AIチャットUIは、Stimulusで入力文を見て`data-ai-mode`を切り替え、画面上の強調対象を変えます。
+加えて、環境変数が設定されていれば投稿内容をDiscord WebhookとHermes Webhookへ送ります。
+
+`/ai_chat` は、通常の下部チャットよりも長文依頼向けの専用ページです。repo、Render、push方針、README確認、秘密情報をGitHubへ入れないことなどの前提をhidden contextとしてHermesへ同梱します。
 
 現在の判定例:
 
