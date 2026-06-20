@@ -3,127 +3,83 @@
 <% work_done_count = [@work_day.check_in_confirmed?, @work_day.check_out_confirmed?].count(true) %>
 <% latest_lunch = @recent_lunch_logs.first %>
 
-<section class="home-subscbox">
-  <header class="home-subscbox__masthead">
-    <div>
-      <p>JIBUN OS</p>
-      <h1>今日の管理</h1>
-    </div>
-    <time datetime="<%= @today.iso8601 %>"><%= @today.strftime("%-m/%-d") %></time>
-  </header>
+<section class="page-head">
+  <div>
+    <p class="eyebrow">DASHBOARD</p>
+    <h1>今日の管理</h1>
+    <p><%= l(@today, format: :long) %></p>
+  </div>
+</section>
 
-  <% if @reminder.present? %>
-    <div class="home-subscbox__notice">
-      <span aria-hidden="true"></span>
-      <strong><%= @reminder %></strong>
-    </div>
-  <% end %>
+<% if @reminder.present? %>
+  <section class="reminder-banner focus-work">
+    <span class="card-icon card-icon--work" aria-hidden="true"></span>
+    <strong><%= @reminder %></strong>
+  </section>
+<% end %>
 
-  <article class="home-subscbox__summary focus-budget">
+<section class="pixel-card focus-work">
+  <h2>打刻チェック</h2>
+  <div class="check-grid">
+    <div class="check-tile">
+      <span class="card-icon card-icon--work" aria-hidden="true"></span>
+      <p>出勤</p>
+      <strong class="<%= @work_day.check_in_confirmed? ? "ok" : "ng" %>"><%= status_chip(@work_day.check_in_confirmed?) %></strong>
+      <%= button_to(@work_day.check_in_confirmed? ? "確認済み" : "出勤打刻した", confirm_check_in_work_days_path, method: :patch, class: "pixel-button pixel-button--green") %>
+    </div>
+
+    <div class="check-tile">
+      <span class="card-icon card-icon--ride" aria-hidden="true"></span>
+      <p>退勤</p>
+      <strong class="<%= @work_day.check_out_confirmed? ? "ok" : "ng" %>"><%= status_chip(@work_day.check_out_confirmed?) %></strong>
+      <%= button_to(@work_day.check_out_confirmed? ? "確認済み" : "退勤打刻した", confirm_check_out_work_days_path, method: :patch, class: "pixel-button pixel-button--blue") %>
+    </div>
+  </div>
+</section>
+
+<section class="pixel-card focus-budget">
+  <p class="eyebrow"><%= Date.current.year %>年<%= Date.current.month %>月</p>
+  <h2>有料列車</h2>
+  <div class="metric-grid">
     <div>
-      <p>今月の有料列車合計</p>
+      <span>今月の合計</span>
       <strong><%= yen(month_fare) %></strong>
     </div>
-    <%= link_to "+", new_paid_ride_path, class: "home-subscbox__summary-action", aria: { label: "有料列車を追加" } %>
-    <dl>
-      <div>
-        <dt>年間換算</dt>
-        <dd><%= yen(month_fare * 12) %></dd>
-      </div>
-      <div>
-        <dt>記録数</dt>
-        <dd><%= @month_paid_rides.count %>件</dd>
-      </div>
-    </dl>
-  </article>
+    <div>
+      <span>記録数</span>
+      <strong><%= @month_paid_rides.count %>件</strong>
+    </div>
+  </div>
+  <p class="card-note">年間換算 <%= yen(month_fare * 12) %></p>
+  <div class="inline-actions">
+    <%= link_to "列車ログ", paid_rides_path %>
+    <%= link_to "今日乗った", new_paid_ride_path %>
+  </div>
+</section>
 
-  <div class="home-subscbox__chips" aria-label="ホーム表示">
-    <span class="is-active">今日</span>
+<section class="pixel-card">
+  <h2>今日の項目</h2>
+  <div class="status-row">
+    <strong>打刻</strong>
+    <span><%= work_done_count %>/2</span>
+  </div>
+  <div class="status-row">
+    <strong>ランチ</strong>
+    <span><%= latest_lunch ? latest_lunch.shop_name : "未記録" %></span>
+  </div>
+  <div class="status-row">
+    <strong>次の趣味</strong>
+    <span><%= @next_hobby_item ? short_date(@next_hobby_item.scheduled_on) : "未定" %></span>
+  </div>
+</section>
+
+<section class="pixel-card">
+  <h2>ショートカット</h2>
+  <nav class="shortcut-grid" aria-label="ホームショートカット">
+    <%= link_to "AI", ai_chat_path %>
     <%= link_to "打刻", today_work_days_path %>
     <%= link_to "列車", paid_rides_path %>
     <%= link_to "ランチ", lunch_logs_path %>
     <%= link_to "趣味", hobby_items_path %>
-  </div>
-
-  <section class="home-subscbox__list" aria-label="今日の項目">
-    <h2>管理中の項目</h2>
-
-    <%= link_to ai_chat_path, class: "home-subscbox__row focus-chat" do %>
-      <span class="home-subscbox__logo home-subscbox__logo--chat" aria-hidden="true">AI</span>
-      <div>
-        <strong>AIチャット</strong>
-        <small>相談・検索・変更依頼を送る</small>
-      </div>
-      <em>›</em>
-    <% end %>
-
-    <div class="home-subscbox__row focus-work">
-      <span class="home-subscbox__logo home-subscbox__logo--work" aria-hidden="true">出</span>
-      <div>
-        <strong>出勤チェック</strong>
-        <small><%= @work_day.check_in_confirmed? ? "確認済み" : "まだ未確認" %></small>
-      </div>
-      <%= button_to(@work_day.check_in_confirmed? ? "完了" : "確認", confirm_check_in_work_days_path, method: :patch, class: "home-subscbox__row-action #{@work_day.check_in_confirmed? ? "is-done" : "is-pending"}") %>
-    </div>
-
-    <div class="home-subscbox__row focus-work">
-      <span class="home-subscbox__logo home-subscbox__logo--rest" aria-hidden="true">退</span>
-      <div>
-        <strong>退勤チェック</strong>
-        <small><%= @work_day.check_out_confirmed? ? "確認済み" : "帰る前に確認" %></small>
-      </div>
-      <%= button_to(@work_day.check_out_confirmed? ? "完了" : "確認", confirm_check_out_work_days_path, method: :patch, class: "home-subscbox__row-action #{@work_day.check_out_confirmed? ? "is-done" : "is-pending"}") %>
-    </div>
-
-    <%= link_to paid_rides_path, class: "home-subscbox__row focus-budget" do %>
-      <span class="home-subscbox__logo home-subscbox__logo--ride" aria-hidden="true">¥</span>
-      <div>
-        <strong>有料列車</strong>
-        <small>今月 <%= @month_paid_rides.count %>件</small>
-      </div>
-      <em><%= yen(month_fare) %></em>
-    <% end %>
-
-    <%= link_to lunch_logs_path, class: "home-subscbox__row focus-lunch" do %>
-      <span class="home-subscbox__logo home-subscbox__logo--lunch" aria-hidden="true">昼</span>
-      <div>
-        <strong><%= latest_lunch ? latest_lunch.shop_name : "ランチ未記録" %></strong>
-        <small><%= latest_lunch ? "#{rating_stars(latest_lunch.rating)} / #{yen(latest_lunch.price)}" : "今日の候補を追加" %></small>
-      </div>
-      <em>›</em>
-    <% end %>
-
-    <%= link_to hobby_items_path, class: "home-subscbox__row focus-hobby" do %>
-      <span class="home-subscbox__logo home-subscbox__logo--hobby" aria-hidden="true">趣</span>
-      <div>
-        <% if @next_hobby_item %>
-          <strong><%= @next_hobby_item.title %></strong>
-          <small><%= short_date(@next_hobby_item.scheduled_on) %> 予定</small>
-        <% elsif @recent_hobby_memo %>
-          <strong><%= truncate(@recent_hobby_memo.title, length: 14) %></strong>
-          <small>最近のメモ</small>
-        <% else %>
-          <strong>趣味メモ</strong>
-          <small>空きを作る</small>
-        <% end %>
-      </div>
-      <em>›</em>
-    <% end %>
-  </section>
-
-  <section class="home-subscbox__mini-stats" aria-label="今日の状態">
-    <div>
-      <span>打刻</span>
-      <strong><%= work_done_count %>/2</strong>
-    </div>
-    <div>
-      <span>ランチ</span>
-      <strong><%= latest_lunch ? "済" : "未" %></strong>
-    </div>
-    <div>
-      <span>次の趣味</span>
-      <strong><%= @next_hobby_item ? short_date(@next_hobby_item.scheduled_on) : "-" %></strong>
-    </div>
-  </section>
-
+  </nav>
 </section>

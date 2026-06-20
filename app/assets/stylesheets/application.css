@@ -7108,76 +7108,24 @@ body.dashboard .home-subscbox__summary {
   }
 }
 
-/* Dashboard mobile safe-area top v7: keep dashboard safe-area in the shell and align the home masthead with page headers */
+/* dashboard-home-rebuild-v1: dashboard now uses the same page/card UI and mobile safe-area pattern as the other pages */
 @supports (padding: max(0px)) {
   @media (max-width: 480px) {
     body.dashboard {
-      padding-top: 0;
+      padding-top: env(safe-area-inset-top);
     }
 
     body.dashboard .app-shell {
       overflow: visible;
-      min-height: 100dvh;
-      padding-top: calc(10px + env(safe-area-inset-top));
+      min-height: calc(100dvh - env(safe-area-inset-top));
+      padding-top: 10px;
     }
 
     body.dashboard .top-bar {
-      top: 0;
+      top: env(safe-area-inset-top);
       margin: -10px -12px 0;
       padding: 13px 14px 8px;
     }
-  }
-}
-
-@media (max-width: 480px) {
-  body.dashboard .home-subscbox {
-    gap: 11px;
-    padding-top: 0;
-  }
-
-  body.dashboard .home-subscbox__masthead {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    gap: 12px;
-    padding: 16px 2px 6px;
-  }
-
-  body.dashboard .home-subscbox__masthead h1 {
-    font-size: 32px;
-    line-height: 1.08;
-  }
-
-  body.dashboard .home-subscbox__masthead time {
-    align-self: end;
-    min-width: 0;
-    padding: 7px 10px;
-    white-space: nowrap;
-  }
-
-  body.dashboard .home-subscbox__summary {
-    min-height: 132px;
-    padding: 16px;
-  }
-
-  body.dashboard .home-subscbox__summary strong {
-    margin-top: 7px;
-    font-size: clamp(30px, 10vw, 40px);
-  }
-
-  body.dashboard .home-subscbox__summary dl {
-    margin-top: 18px;
-  }
-
-  body.dashboard .home-subscbox__summary-action {
-    top: 16px;
-    right: 16px;
-    min-width: 68px;
-    height: 36px;
-  }
-
-  body.dashboard .home-subscbox__chips {
-    padding-bottom: 3px;
   }
 }
 
