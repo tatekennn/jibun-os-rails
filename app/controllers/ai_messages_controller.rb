@@ -11,14 +11,19 @@ class AiMessagesController < ApplicationController
     end
 
     ::DiscordAppMessageNotifier.call(body: body, mode: mode, request: request)
+    hermes_result = ::HermesAppMessageNotifier.call(body: body, mode: mode, request: request)
+    destination = hermes_result == :skipped ? "Discord" : "DiscordとHermes"
 
     render json: {
       ok: true,
-      message: "Discordへ送信しました。必要ならこの内容をもとにアプリを調整します。"
+      message: "#{destination}へ送信しました。必要ならこの内容をもとにアプリを調整します。"
     }
   rescue ::DiscordAppMessageNotifier::DeliveryError => error
     Rails.logger.warn("Discord app message delivery failed: #{error.message}")
     render json: { ok: false, message: "Discordへの送信に失敗しました。少し時間を置いて再送してください。" }, status: :bad_gateway
+  rescue ::HermesAppMessageNotifier::DeliveryError => error
+    Rails.logger.warn("Hermes app message delivery failed: #{error.message}")
+    render json: { ok: false, message: "Hermesへの送信に失敗しました。少し時間を置いて再送してください。" }, status: :bad_gateway
   end
 
   private

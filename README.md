@@ -167,9 +167,20 @@ Renderへpushする前には最低限これを通してください。
 
 ```text
 RAILS_MASTER_KEY
+JIBUN_OS_LOGIN_EMAIL
+JIBUN_OS_LOGIN_PASSWORD
+DISCORD_APP_MESSAGE_WEBHOOK_URL
+DISCORD_APP_MESSAGE_THREAD_ID
+HERMES_APP_MESSAGE_WEBHOOK_URL
+HERMES_APP_MESSAGE_WEBHOOK_SECRET
 ```
 
 `DATABASE_URL`は`render.yaml`で`jibun-os-db`から自動参照します。
+
+`DISCORD_APP_MESSAGE_*` は、アプリ内AIチャットの内容をDiscordスレッドへ通知するための設定です。
+`HERMES_APP_MESSAGE_*` は、同じ投稿をHermes AgentのWebhookへ直接送り、Hermes側で内容を把握・処理できるようにするための設定です。
+`HERMES_APP_MESSAGE_WEBHOOK_SECRET` はHermes Webhook側のroute secretと同じ値にします。
+Render上のRailsアプリから届く必要があるため、`HERMES_APP_MESSAGE_WEBHOOK_URL` にはlocalhostではなく、外部から到達できるHermes Webhook URLを設定します。
 
 Renderの構成:
 

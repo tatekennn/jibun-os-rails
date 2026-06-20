@@ -1,0 +1,45 @@
+require "test_helper"
+
+class HermesAppMessageNotifierTest < ActiveSupport::TestCase
+  test "builds payload for app-originated ai message" do
+    request = ActionDispatch::TestRequest.create
+    request.remote_addr = "127.0.0.1"
+
+    payload = HermesAppMessageNotifier.build_payload(
+      body: "退勤チェックして今日のまとめを見たい",
+      mode: "dashboard",
+      request: request
+    )
+
+    assert_equal "jibun_os.ai_message", payload[:event_type]
+    assert_equal "jibun-os-rails", payload[:app]
+    assert_equal "自分OSアプリ", payload[:source]
+    assert_equal "退勤チェックして今日のまとめを見たい", payload[:body]
+    assert_equal "dashboard", payload[:mode]
+    assert_equal "/", payload[:path]
+    assert payload[:sent_at].present?
+  end
+
+  test "adds generic hmac signature header when secret is configured" do
+    original_secret = HermesAppMessageNotifier.method(:webhook_secret)
+    HermesAppMessageNotifier.define_singleton_method(:webhook_secret) { "test-secret" }
+    json_body = { event_type: "jibun_os.ai_message", body: "test" }.to_json
+
+    headers = HermesAppMessageNotifier.headers_for(json_body)
+
+    assert_equal "application/json", headers["Content-Type"]
+    assert_equal OpenSSL::HMAC.hexdigest("SHA256", "test-secret", json_body), headers["X-Webhook-Signature"]
+    assert headers["X-Request-ID"].present?
+  ensure
+    HermesAppMessageNotifier.define_singleton_method(:webhook_secret, original_secret) if original_secret
+  end
+
+  test "does not post when webhook url is blank" do
+    original_webhook_url = HermesAppMessageNotifier.method(:webhook_url)
+    HermesAppMessageNotifier.define_singleton_method(:webhook_url) { "" }
+
+    assert_equal :skipped, HermesAppMessageNotifier.call(body: "test", mode: "dashboard", request: nil)
+  ensure
+    HermesAppMessageNotifier.define_singleton_method(:webhook_url, original_webhook_url) if original_webhook_url
+  end
+end
