@@ -17,6 +17,23 @@ class DiscordAppMessageNotifierTest < ActiveSupport::TestCase
     assert_includes content, "このDiscordに届いた文章は、アプリ内AIチャットから送られた改善依頼です。"
   end
 
+  test "builds webhook uri with discord thread id when configured" do
+    original_webhook_url = DiscordAppMessageNotifier.method(:webhook_url)
+    original_thread_id = DiscordAppMessageNotifier.method(:thread_id)
+    DiscordAppMessageNotifier.define_singleton_method(:webhook_url) { "https://discord.com/api/webhooks/123/token?wait=true" }
+    DiscordAppMessageNotifier.define_singleton_method(:thread_id) { "1517816194504065045" }
+
+    uri = DiscordAppMessageNotifier.webhook_uri
+
+    assert_equal "https", uri.scheme
+    assert_equal "discord.com", uri.host
+    assert_includes uri.query, "wait=true"
+    assert_includes uri.query, "thread_id=1517816194504065045"
+  ensure
+    DiscordAppMessageNotifier.define_singleton_method(:webhook_url, original_webhook_url) if original_webhook_url
+    DiscordAppMessageNotifier.define_singleton_method(:thread_id, original_thread_id) if original_thread_id
+  end
+
   test "does not post when webhook url is blank" do
     original_webhook_url = DiscordAppMessageNotifier.method(:webhook_url)
     DiscordAppMessageNotifier.define_singleton_method(:webhook_url) { "" }

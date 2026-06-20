@@ -1,5 +1,6 @@
 require "json"
 require "net/http"
+require "uri"
 
 class DiscordAppMessageNotifier
   class DeliveryError < StandardError; end
@@ -8,7 +9,7 @@ class DiscordAppMessageNotifier
     def call(body:, mode:, request:)
       return :skipped if webhook_url.blank?
 
-      uri = URI.parse(webhook_url)
+      uri = webhook_uri
       response = Net::HTTP.post(
         uri,
         { content: build_content(body: body, mode: mode, request: request) }.to_json,
@@ -36,6 +37,21 @@ class DiscordAppMessageNotifier
         - ip: #{request&.remote_ip || "unknown"}
         - sent_at: #{Time.current.strftime("%Y-%m-%d %H:%M:%S %Z")}
       MESSAGE
+    end
+
+    def webhook_uri
+      uri = URI.parse(webhook_url)
+      return uri if thread_id.blank?
+
+      query = URI.decode_www_form(uri.query.to_s)
+      query.reject! { |key, _value| key == "thread_id" }
+      query << ["thread_id", thread_id]
+      uri.query = URI.encode_www_form(query)
+      uri
+    end
+
+    def thread_id
+      ENV["DISCORD_APP_MESSAGE_THREAD_ID"]
     end
 
     def webhook_url
