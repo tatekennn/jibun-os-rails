@@ -10,22 +10,6 @@
 </section>
 
 <section class="chat-room" aria-label="AIチャット" data-controller="ai-chat" data-ai-chat-default-mode-value="dashboard" data-ai-chat-endpoint-value="<%= ai_messages_path(format: :json) %>" data-ai-chat-push-subscriptions-endpoint-value="<%= push_subscriptions_path(format: :json) %>" data-ai-chat-vapid-public-key-value="<%= ENV["VAPID_PUBLIC_KEY"].to_s %>">
-  <details class="chat-room__context pixel-card">
-    <summary>
-      <span>
-        <small class="eyebrow">App context</small>
-        <strong>裏側で添える前提</strong>
-      </span>
-    </summary>
-    <ul>
-      <li>Rails repo: <code>tatekennn/jibun-os-rails</code></li>
-      <li>作業ディレクトリ: <code>/opt/data/jibun-os-rails</code></li>
-      <li><code>main</code>へpushするとRenderの <code>jibun-os</code> に自動デプロイ</li>
-      <li>README、git status、関連ファイルを確認してから作業</li>
-      <li>このアプリ内チャットでは特定の人格設定や <code>soul.md</code> は前提にしない</li>
-    </ul>
-  </details>
-
   <div class="chat-room__panel ai-dock" aria-label="AIへの依頼">
     <div class="ai-dock__header chat-room__assistant">
       <span class="pixel-face" aria-hidden="true"></span>
@@ -59,7 +43,6 @@
     </div>
 
     <form class="ai-dock__form chat-room__form" data-action="submit->ai-chat#send">
-      <input type="hidden" data-ai-chat-target="context" value="自分OSRailsアプリの開発依頼。GitHub repo: tatekennn/jibun-os-rails。作業ディレクトリ: /opt/data/jibun-os-rails。mainへpushするとRender Web Service jibun-osへ自動デプロイ。README.md、git status、関連ファイルを確認してから作業。config/master.keyは絶対にGitHubへ入れない。必要に応じて検索、コード変更、テスト、commit、pushまで進める。アプリ内チャットでは特定の人格設定やsoul.mdは前提にしない。">
       <textarea data-ai-chat-target="input" rows="4" placeholder="例: チャット画面をもっと使いやすくして。" aria-label="AIチャット入力" autocomplete="off"></textarea>
       <button type="submit" data-ai-chat-target="submitButton">送信</button>
     </form>
