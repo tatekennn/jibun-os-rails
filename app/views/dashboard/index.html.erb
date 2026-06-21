@@ -2,85 +2,91 @@
 <% month_fare = @month_paid_rides.sum(:fare) %>
 <% work_done_count = [@work_day.check_in_confirmed?, @work_day.check_out_confirmed?].count(true) %>
 <% latest_lunch = @recent_lunch_logs.first %>
+<% work_next_label = @work_day.check_in_confirmed? ? (@work_day.check_out_confirmed? ? "今日は打刻完了" : "退勤だけ忘れずに") : "まず出勤打刻" %>
+<% train_note = @month_paid_rides.any? ? "今月 #{@month_paid_rides.count}回 / #{yen(month_fare)}" : "今月はまだ記録なし" %>
+<% lunch_note = latest_lunch ? "最近: #{latest_lunch.shop_name}" : "良かった店を1件残す" %>
+<% hobby_note = @next_hobby_item ? "次: #{short_date(@next_hobby_item.scheduled_on)} #{@next_hobby_item.title}" : (@recent_hobby_memo ? "メモ: #{@recent_hobby_memo.title}" : "予定・メモを置く") %>
+<% check_in_button_class = ["life-home__action-button", ("is-done" if @work_day.check_in_confirmed?)].compact.join(" ") %>
+<% check_out_button_class = ["life-home__action-button", (@work_day.check_out_confirmed? ? "is-done" : "is-secondary")].compact.join(" ") %>
 
-<section class="page-head dashboard-head">
-  <div>
-    <p class="eyebrow">DASHBOARD</p>
-    <h1>今日の管理</h1>
-    <p><%= l(@today, format: :long) %></p>
-  </div>
-  <%= link_to "AIチャット", ai_chat_path, class: "ghost-button dashboard-head__chat" %>
-</section>
+<section class="life-home" aria-label="自分OS ホーム">
+  <header class="life-home__hero">
+    <div class="life-home__hero-copy">
+      <p class="life-home__eyebrow">TODAY / <%= l(@today, format: :long) %></p>
+      <h1>今日を軽く回す</h1>
+      <p>打刻・移動費・ランチ・趣味を、迷わず1タップで整理するホーム。</p>
+    </div>
+    <%= link_to "AIに相談", ai_chat_path, class: "life-home__ai-button" %>
+  </header>
 
-<% if @reminder.present? %>
-  <section class="reminder-banner focus-work">
-    <span class="card-icon card-icon--work" aria-hidden="true"></span>
-    <strong><%= @reminder %></strong>
+  <% if @reminder.present? %>
+    <section class="life-home__notice" aria-label="リマインド">
+      <span aria-hidden="true"></span>
+      <strong><%= @reminder %></strong>
+    </section>
+  <% end %>
+
+  <section class="life-home__primary-card" aria-labelledby="work-check-heading">
+    <div>
+      <p class="life-home__eyebrow">NEXT ACTION</p>
+      <h2 id="work-check-heading"><%= work_next_label %></h2>
+      <p><%= work_done_count %>/2 完了。毎日使う打刻を最上段に固定。</p>
+    </div>
+
+    <div class="life-home__work-actions">
+      <%= button_to(@work_day.check_in_confirmed? ? "出勤済み" : "出勤した", confirm_check_in_work_days_path, method: :patch, class: check_in_button_class) %>
+      <%= button_to(@work_day.check_out_confirmed? ? "退勤済み" : "退勤した", confirm_check_out_work_days_path, method: :patch, class: check_out_button_class) %>
+    </div>
   </section>
-<% end %>
 
-<section class="pixel-card focus-work">
-  <h2>打刻チェック</h2>
-  <div class="check-grid">
-    <div class="check-tile">
-      <span class="card-icon card-icon--work" aria-hidden="true"></span>
-      <p>出勤</p>
-      <strong class="<%= @work_day.check_in_confirmed? ? "ok" : "ng" %>"><%= status_chip(@work_day.check_in_confirmed?) %></strong>
-      <%= button_to(@work_day.check_in_confirmed? ? "確認済み" : "出勤打刻した", confirm_check_in_work_days_path, method: :patch, class: "pixel-button pixel-button--green") %>
+  <section class="life-home__module-grid" aria-label="生活ログ">
+    <%= link_to paid_rides_path, class: "life-home__module life-home__module--train" do %>
+      <span>TRAIN</span>
+      <strong>有料列車</strong>
+      <small><%= train_note %></small>
+    <% end %>
+
+    <%= link_to lunch_logs_path, class: "life-home__module life-home__module--lunch" do %>
+      <span>LUNCH</span>
+      <strong>渋谷ランチ</strong>
+      <small><%= lunch_note %></small>
+    <% end %>
+
+    <%= link_to hobby_items_path, class: "life-home__module life-home__module--hobby" do %>
+      <span>HOBBY</span>
+      <strong>趣味メモ</strong>
+      <small><%= hobby_note %></small>
+    <% end %>
+  </section>
+
+  <section class="life-home__quick-list" aria-label="すぐ使う">
+    <div class="life-home__section-title">
+      <h2>すぐ使う</h2>
+      <span>記録先を迷わない</span>
     </div>
 
-    <div class="check-tile">
-      <span class="card-icon card-icon--ride" aria-hidden="true"></span>
-      <p>退勤</p>
-      <strong class="<%= @work_day.check_out_confirmed? ? "ok" : "ng" %>"><%= status_chip(@work_day.check_out_confirmed?) %></strong>
-      <%= button_to(@work_day.check_out_confirmed? ? "確認済み" : "退勤打刻した", confirm_check_out_work_days_path, method: :patch, class: "pixel-button pixel-button--blue") %>
-    </div>
-  </div>
-</section>
+    <%= link_to today_work_days_path, class: "life-home__quick-row" do %>
+      <span class="life-home__quick-icon">勤</span>
+      <strong>打刻チェック</strong>
+      <em><%= work_done_count %>/2</em>
+    <% end %>
 
-<section class="pixel-card focus-budget">
-  <p class="eyebrow"><%= Date.current.year %>年<%= Date.current.month %>月</p>
-  <h2>有料列車</h2>
-  <div class="metric-grid">
-    <div>
-      <span>今月の合計</span>
-      <strong><%= yen(month_fare) %></strong>
-    </div>
-    <div>
-      <span>記録数</span>
-      <strong><%= @month_paid_rides.count %>件</strong>
-    </div>
-  </div>
-  <p class="card-note">年間換算 <%= yen(month_fare * 12) %></p>
-  <div class="inline-actions">
-    <%= link_to "列車ログ", paid_rides_path %>
-    <%= link_to "今日乗った", new_paid_ride_path %>
-  </div>
-</section>
+    <%= link_to new_paid_ride_path, class: "life-home__quick-row" do %>
+      <span class="life-home__quick-icon">￥</span>
+      <strong>有料列車を記録</strong>
+      <em>追加</em>
+    <% end %>
 
-<section class="pixel-card">
-  <h2>今日の項目</h2>
-  <div class="status-row">
-    <strong>打刻</strong>
-    <span><%= work_done_count %>/2</span>
-  </div>
-  <div class="status-row">
-    <strong>ランチ</strong>
-    <span><%= latest_lunch ? latest_lunch.shop_name : "未記録" %></span>
-  </div>
-  <div class="status-row">
-    <strong>次の趣味</strong>
-    <span><%= @next_hobby_item ? short_date(@next_hobby_item.scheduled_on) : "未定" %></span>
-  </div>
-</section>
+    <%= link_to new_lunch_log_path, class: "life-home__quick-row" do %>
+      <span class="life-home__quick-icon">昼</span>
+      <strong>ランチを残す</strong>
+      <em>追加</em>
+    <% end %>
 
-<section class="pixel-card">
-  <h2>ショートカット</h2>
-  <nav class="shortcut-grid" aria-label="ホームショートカット">
-    <%= link_to "AI", ai_chat_path %>
-    <%= link_to "打刻", today_work_days_path %>
-    <%= link_to "列車", paid_rides_path %>
-    <%= link_to "ランチ", lunch_logs_path %>
-    <%= link_to "趣味", hobby_items_path %>
-  </nav>
+    <%= link_to new_hobby_item_path, class: "life-home__quick-row" do %>
+      <span class="life-home__quick-icon">趣</span>
+      <strong>趣味予定・メモ</strong>
+      <em>追加</em>
+    <% end %>
+  </section>
 </section>
