@@ -22,6 +22,10 @@
 <section class="pixel-card">
   <p class="eyebrow">FILTER</p>
   <%= form_with url: lunch_logs_path, method: :get, class: "filter-grid" do |form| %>
+    <label class="filter-grid__select">
+      <span>並び替え</span>
+      <%= select_tag :sort, options_for_select(@sort_options.map { |value, label| [label, value] }, @sort) %>
+    </label>
     <label><%= check_box_tag :under_1000, "1", params[:under_1000].present? %><span>1000円以下</span></label>
     <label><%= check_box_tag :rating_4, "1", params[:rating_4].present? %><span>★4以上</span></label>
     <label><%= check_box_tag :solo, "1", params[:solo].present? %><span>一人OK</span></label>
@@ -58,6 +62,7 @@
       </div>
       <p class="card-note"><%= short_date(lunch_log.visited_on) %> / <%= lunch_log.area %> / <%= yen(lunch_log.price) %> / <%= lunch_log.crowdedness %></p>
       <div class="tag-row">
+        <% if @visit_counts[lunch_log.shop_name].to_i > 1 %><span><%= @visit_counts[lunch_log.shop_name] %>回訪問</span><% end %>
         <% if lunch_log.solo_friendly? %><span>一人OK</span><% end %>
         <% if lunch_log.repeat? %><span>また行く</span><% end %>
       </div>

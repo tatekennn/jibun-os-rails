@@ -6999,6 +6999,22 @@ body.dashboard .home-subscbox__summary {
   background: rgba(255, 255, 255, 0.74);
 }
 
+.filter-grid__select {
+  grid-column: 1 / -1;
+  justify-content: space-between;
+}
+
+.filter-grid__select select {
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--app-text);
+  font: inherit;
+  font-weight: 800;
+}
+
 .ai-dock__message {
   white-space: pre-wrap;
 }

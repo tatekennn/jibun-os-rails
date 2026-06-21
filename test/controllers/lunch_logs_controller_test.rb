@@ -14,6 +14,31 @@ class LunchLogsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should sort lunch logs by rating" do
+    LunchLog.delete_all
+    create_lunch_log!(shop_name: "Low Rating", rating: 2, visited_on: Date.new(2026, 6, 18))
+    create_lunch_log!(shop_name: "High Rating", rating: 5, visited_on: Date.new(2026, 6, 17))
+    create_lunch_log!(shop_name: "Middle Rating", rating: 4, visited_on: Date.new(2026, 6, 19))
+
+    get lunch_logs_url(sort: "rating")
+
+    assert_response :success
+    assert_equal ["High Rating", "Middle Rating", "Low Rating"], lunch_log_names
+  end
+
+  test "should sort lunch logs by visit count" do
+    LunchLog.delete_all
+    create_lunch_log!(shop_name: "Solo Shop", rating: 5, visited_on: Date.new(2026, 6, 19))
+    create_lunch_log!(shop_name: "Repeat Shop", rating: 3, visited_on: Date.new(2026, 6, 17))
+    create_lunch_log!(shop_name: "Repeat Shop", rating: 4, visited_on: Date.new(2026, 6, 18))
+
+    get lunch_logs_url(sort: "visits")
+
+    assert_response :success
+    assert_equal ["Repeat Shop", "Repeat Shop", "Solo Shop"], lunch_log_names
+    assert_includes @response.body, "2回訪問"
+  end
+
   test "should get new" do
     get new_lunch_log_url
     assert_response :success
@@ -49,4 +74,21 @@ class LunchLogsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to lunch_logs_url
   end
+
+  private
+
+    def create_lunch_log!(attributes)
+      LunchLog.create!({
+        area: "渋谷",
+        crowdedness: "普通",
+        memo: "",
+        price: 1000,
+        repeat: false,
+        solo_friendly: true
+      }.merge(attributes))
+    end
+
+    def lunch_log_names
+      css_select("article.compact-card .list-line strong").map { |element| element.text.strip }
+    end
 end
