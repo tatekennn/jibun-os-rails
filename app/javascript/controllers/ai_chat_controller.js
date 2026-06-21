@@ -9,6 +9,7 @@ export default class extends Controller {
     this.applyMode(savedMode, false)
     this.refreshNotificationButton()
     this.restorePushSubscriptionIfNeeded()
+    this.scrollLogToBottom()
 
     if (this.hasInputTarget) {
       this.submitShortcutHandler = (event) => {
@@ -355,6 +356,14 @@ export default class extends Controller {
     return `${base}/${encodeURIComponent(messageId)}.json`
   }
 
+  scrollLogToBottom() {
+    if (!this.hasLogTarget) return
+
+    window.requestAnimationFrame(() => {
+      this.logTarget.scrollTop = this.logTarget.scrollHeight
+    })
+  }
+
   replaceLineText(line, text) {
     if (!line) return
 
@@ -362,7 +371,7 @@ export default class extends Controller {
     line.textContent = ""
     if (badge) line.appendChild(badge)
     line.append(` ${text}`)
-    this.logTarget.scrollTop = this.logTarget.scrollHeight
+    this.scrollLogToBottom()
   }
 
   showThinking() {
@@ -375,7 +384,7 @@ export default class extends Controller {
     line.appendChild(badge)
     line.append(" 考えています")
     this.logTarget.appendChild(line)
-    this.logTarget.scrollTop = this.logTarget.scrollHeight
+    this.scrollLogToBottom()
   }
 
   hideThinking() {
@@ -391,7 +400,7 @@ export default class extends Controller {
     line.appendChild(badge)
     line.append(` ${text}`)
     this.logTarget.appendChild(line)
-    this.logTarget.scrollTop = this.logTarget.scrollHeight
+    this.scrollLogToBottom()
     return line
   }
 }

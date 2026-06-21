@@ -3,12 +3,13 @@
 <% work_done_count = [@work_day.check_in_confirmed?, @work_day.check_out_confirmed?].count(true) %>
 <% latest_lunch = @recent_lunch_logs.first %>
 
-<section class="page-head">
+<section class="page-head dashboard-head">
   <div>
     <p class="eyebrow">DASHBOARD</p>
     <h1>今日の管理</h1>
     <p><%= l(@today, format: :long) %></p>
   </div>
+  <%= link_to "AIチャット", ai_chat_path, class: "ghost-button dashboard-head__chat" %>
 </section>
 
 <% if @reminder.present? %>

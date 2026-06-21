@@ -6833,6 +6833,33 @@ body.ai_chats .bottom-nav {
   }
 }
 
+/* dashboard-ai-chat-entry-v1: keep the home AI chat action visible near the top */
+.dashboard-head {
+  --dashboard-ai-chat-entry-v1: 1;
+  align-items: center;
+}
+
+.dashboard-head__chat {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 104px;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .dashboard-head {
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .dashboard-head__chat {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
 /* --- JIBUN OS overall polish: calm PWA shell + desktop companion --- */
 :root {
   --app-bg: #edf4f1;
