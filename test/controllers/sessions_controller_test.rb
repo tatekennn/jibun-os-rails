@@ -16,6 +16,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "strong", text: "自分OS"
   end
 
+  test "owner login uses a persistent session cookie" do
+    sign_in_as_owner
+
+    set_cookie_header = response.headers["Set-Cookie"]
+    assert_includes set_cookie_header, "_jibun_os_session="
+    assert_match(/expires=/i, set_cookie_header)
+  end
+
   test "wrong password keeps visitor on login" do
     post login_url, params: { session: { email: "owner@example.com", password: "wrong" } }
 
