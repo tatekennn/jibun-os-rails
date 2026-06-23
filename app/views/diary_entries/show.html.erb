@@ -1,0 +1,25 @@
+<% content_for :title, "日記 - 自分OS" %>
+
+<section class="page-head">
+  <p class="eyebrow">DIARY DETAIL</p>
+  <h1><%= @diary_entry.display_title %></h1>
+  <div class="split-actions">
+    <%= link_to "編集", edit_diary_entry_path(@diary_entry), class: "pixel-button pixel-button--green" %>
+    <%= link_to "一覧へ", diary_entries_path, class: "pixel-button" %>
+  </div>
+</section>
+
+<article class="pixel-card">
+  <p class="card-note">
+    <%= l(@diary_entry.wrote_on, format: :long) %> / <%= @diary_entry.mood_label %>
+    <% if @diary_entry.weather.present? %> / <%= @diary_entry.weather %><% end %>
+  </p>
+  <%= simple_format(@diary_entry.body) %>
+  <% if @diary_entry.tags.present? %>
+    <div class="tag-row">
+      <% @diary_entry.tags.split(/[、,\s]+/).reject(&:blank?).each do |tag| %>
+        <span><%= tag %></span>
+      <% end %>
+    </div>
+  <% end %>
+</article>

@@ -7527,6 +7527,10 @@ body.dashboard .screen {
   background: linear-gradient(180deg, #ffffff, #f7f1ff);
 }
 
+.life-home__module--diary {
+  background: linear-gradient(180deg, #ffffff, #eef7ff);
+}
+
 .life-home__quick-list {
   display: grid;
   gap: 0;

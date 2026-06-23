@@ -1,0 +1,47 @@
+<%= form_with(model: diary_entry, class: "pixel-form pixel-card") do |form| %>
+  <% if diary_entry.errors.any? %>
+    <div class="error-box">
+      <h2>保存できませんでした</h2>
+      <ul>
+        <% diary_entry.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :wrote_on, "日付" %>
+    <%= form.date_field :wrote_on %>
+  </div>
+
+  <div>
+    <%= form.label :title, "タイトル" %>
+    <%= form.text_field :title, placeholder: "例: 今日は早めに帰れた" %>
+  </div>
+
+  <div>
+    <%= form.label :mood, "気分" %>
+    <%= form.select :mood, [["良い", "good"], ["普通", "normal"], ["疲れ気味", "tired"], ["しんどい", "rough"]] %>
+  </div>
+
+  <div>
+    <%= form.label :weather, "天気・体調メモ" %>
+    <%= form.text_field :weather, placeholder: "例: 晴れ / 少し眠い" %>
+  </div>
+
+  <div>
+    <%= form.label :body, "本文" %>
+    <%= form.text_area :body, placeholder: "今日あったこと、よかったこと、明日の自分へのメモ" %>
+  </div>
+
+  <div>
+    <%= form.label :tags, "タグ" %>
+    <%= form.text_field :tags, placeholder: "例: 仕事, 休息, 趣味" %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit diary_entry.persisted? ? "変更を保存" : "日記を保存", class: "pixel-button pixel-button--full" %>
+    <%= link_to "一覧へ戻る", diary_entries_path, class: "text-link" %>
+  </div>
+<% end %>

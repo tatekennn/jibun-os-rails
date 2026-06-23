@@ -1,0 +1,15 @@
+one:
+  wrote_on: 2026-06-22
+  title: 月曜メモ
+  mood: normal
+  weather: 晴れ
+  body: 今日の仕事と帰り道のメモ。
+  tags: 仕事, 生活
+
+two:
+  wrote_on: 2026-06-21
+  title: 週末ログ
+  mood: good
+  weather: 曇り
+  body: 趣味の予定を整理した。
+  tags: 趣味

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   end
 
   resources :lunch_logs
+  resources :diary_entries
   resources :hobby_items
   resources :paid_rides
   resources :ai_messages, only: %i[create show]

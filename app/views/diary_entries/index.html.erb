@@ -1,0 +1,55 @@
+<% content_for :title, "日記 - 自分OS" %>
+
+<section class="page-head focus-diary">
+  <p class="eyebrow">DIARY</p>
+  <h1>日記</h1>
+  <div class="split-actions">
+    <% if @today_entry %>
+      <%= link_to "今日を編集", edit_diary_entry_path(@today_entry), class: "pixel-button pixel-button--green" %>
+    <% else %>
+      <%= link_to "今日を書く", new_diary_entry_path, class: "pixel-button pixel-button--green" %>
+    <% end %>
+  </div>
+</section>
+
+<section class="pixel-card focus-diary">
+  <p class="eyebrow">TODAY</p>
+  <% if @today_entry %>
+    <h2><%= @today_entry.display_title %></h2>
+    <p class="card-note"><%= @today_entry.mood_label %><% if @today_entry.weather.present? %> / <%= @today_entry.weather %><% end %></p>
+    <p><%= truncate(@today_entry.body, length: 90) %></p>
+  <% else %>
+    <h2>今日はまだ空です</h2>
+    <p class="card-note">出来事、気分、明日の自分へのメモを短く残せます。</p>
+  <% end %>
+</section>
+
+<section class="log-list">
+  <% if @diary_entries.empty? %>
+    <div class="empty-state pixel-card">
+      <strong>日記はまだありません</strong>
+      <p>長文でなくて大丈夫です。今日あったことを3行だけ置いておけます。</p>
+      <%= link_to "最初の日記を書く", new_diary_entry_path, class: "pixel-button pixel-button--full" %>
+    </div>
+  <% end %>
+
+  <% @diary_entries.each do |diary_entry| %>
+    <article class="pixel-card compact-card">
+      <div class="list-line">
+        <strong><%= diary_entry.display_title %></strong>
+        <span><%= short_date(diary_entry.wrote_on) %></span>
+      </div>
+      <p class="card-note">
+        <%= diary_entry.mood_label %>
+        <% if diary_entry.weather.present? %> / <%= diary_entry.weather %><% end %>
+        <% if diary_entry.tags.present? %> / <%= diary_entry.tags %><% end %>
+      </p>
+      <p><%= truncate(diary_entry.body, length: 88) %></p>
+      <div class="inline-actions">
+        <%= link_to "詳細", diary_entry_path(diary_entry) %>
+        <%= link_to "編集", edit_diary_entry_path(diary_entry) %>
+        <%= button_to "削除", diary_entry_path(diary_entry), method: :delete, class: "danger-action", data: { turbo_confirm: "この日記を削除しますか？" } %>
+      </div>
+    </article>
+  <% end %>
+</section>

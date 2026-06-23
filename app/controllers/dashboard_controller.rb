@@ -8,6 +8,7 @@ class DashboardController < ApplicationController
     @work_day = WorkDay.today
     @month_paid_rides = PaidRide.this_month.recent
     @recent_lunch_logs = LunchLog.recent.limit(3)
+    @recent_diary_entry = DiaryEntry.recent.first
     @next_hobby_item = HobbyItem.events.planned.where("scheduled_on >= ?", @today).order(:scheduled_on).first
     @recent_hobby_memo = HobbyItem.memos.recent.first
     @reminder = current_reminder(@work_day)

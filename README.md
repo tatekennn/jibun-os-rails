@@ -50,6 +50,7 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 - 打刻チェック: 今日の出勤・退勤確認と日別履歴
 - 有料列車ログ: 月次回数、合計金額、理由、疲労度
 - 渋谷ランチログ: 価格、満足度、混雑度、一人利用、再訪フラグ、絞り込み
+- 日記: 日付ごとに気分、本文、タグを残す日次ログ
 - 趣味コーナー: 予定とメモをカテゴリ付きで保存
 - AIチャットページ: アプリ内の自然文投稿をHermes Agentへ送り、callback経由で返信をアプリ内に表示する画面
 - PWA: manifest、service worker、offlineページ
@@ -64,6 +65,8 @@ Render本番では`DATABASE_URL`でPostgresへ接続します。`config/master.k
 /paid_rides/new           有料列車の記録フォーム
 /lunch_logs               ランチログ
 /lunch_logs/new           ランチ記録フォーム
+/diary_entries            日記
+/diary_entries/new        日記フォーム
 /hobby_items              趣味予定・メモ
 /hobby_items/new          趣味記録フォーム
 /ai_chat                  AIチャットページ

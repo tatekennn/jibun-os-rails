@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_20_232221) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_23_220548) do
   create_table "ai_messages", force: :cascade do |t|
     t.string "public_id", null: false
     t.string "callback_token", null: false
@@ -27,6 +27,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_20_232221) do
     t.index ["created_at"], name: "index_ai_messages_on_created_at"
     t.index ["public_id"], name: "index_ai_messages_on_public_id", unique: true
     t.index ["status"], name: "index_ai_messages_on_status"
+  end
+
+  create_table "diary_entries", force: :cascade do |t|
+    t.date "wrote_on", null: false
+    t.string "title"
+    t.string "mood", default: "normal", null: false
+    t.string "weather"
+    t.text "body", null: false
+    t.text "tags"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mood"], name: "index_diary_entries_on_mood"
+    t.index ["wrote_on"], name: "index_diary_entries_on_wrote_on", unique: true
   end
 
   create_table "hobby_items", force: :cascade do |t|

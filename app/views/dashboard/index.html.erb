@@ -5,6 +5,7 @@
 <% work_next_label = @work_day.check_in_confirmed? ? (@work_day.check_out_confirmed? ? "今日は打刻完了" : "退勤だけ忘れずに") : "まず出勤打刻" %>
 <% train_note = @month_paid_rides.any? ? "今月 #{@month_paid_rides.count}回 / #{yen(month_fare)}" : "今月はまだ記録なし" %>
 <% lunch_note = latest_lunch ? "最近: #{latest_lunch.shop_name}" : "良かった店を1件残す" %>
+<% diary_note = @recent_diary_entry ? "最新: #{short_date(@recent_diary_entry.wrote_on)} #{@recent_diary_entry.display_title}" : "今日のことを3行だけ" %>
 <% hobby_note = @next_hobby_item ? "次: #{short_date(@next_hobby_item.scheduled_on)} #{@next_hobby_item.title}" : (@recent_hobby_memo ? "メモ: #{@recent_hobby_memo.title}" : "予定・メモを置く") %>
 <% check_in_button_class = ["life-home__action-button", ("is-done" if @work_day.check_in_confirmed?)].compact.join(" ") %>
 <% check_out_button_class = ["life-home__action-button", (@work_day.check_out_confirmed? ? "is-done" : "is-secondary")].compact.join(" ") %>
@@ -57,6 +58,12 @@
       <strong>趣味メモ</strong>
       <small><%= hobby_note %></small>
     <% end %>
+
+    <%= link_to diary_entries_path, class: "life-home__module life-home__module--diary" do %>
+      <span>DIARY</span>
+      <strong>日記</strong>
+      <small><%= diary_note %></small>
+    <% end %>
   </section>
 
   <section class="life-home__quick-list" aria-label="すぐ使う">
@@ -86,6 +93,12 @@
     <%= link_to new_hobby_item_path, class: "life-home__quick-row" do %>
       <span class="life-home__quick-icon">趣</span>
       <strong>趣味予定・メモ</strong>
+      <em>追加</em>
+    <% end %>
+
+    <%= link_to new_diary_entry_path, class: "life-home__quick-row" do %>
+      <span class="life-home__quick-icon">日</span>
+      <strong>日記を書く</strong>
       <em>追加</em>
     <% end %>
   </section>
